@@ -15,6 +15,7 @@ public class InventoryPage {
   private final SelenideElement title = $(".title");
   private final ElementsCollection inventoryItems = $$(".inventory_item");
   private final SelenideElement addBackpackButton = $("#add-to-cart-sauce-labs-backpack");
+  private final SelenideElement addBikeLightButton = $("#add-to-cart-sauce-labs-bike-light");
   private final SelenideElement removeBackpackButton = $("#remove-sauce-labs-backpack");
   private final SelenideElement cartBadge = $(".shopping_cart_badge");
   private final SelenideElement cartLink = $(".shopping_cart_link");
@@ -33,6 +34,12 @@ public class InventoryPage {
   @Step("Add backpack to cart")
   public InventoryPage addBackpackToCart() {
     addBackpackButton.shouldBe(visible).click();
+    return this;
+  }
+
+  @Step("Add bike light to cart")
+  public InventoryPage addBikeLightToCart() {
+    addBikeLightButton.shouldBe(visible).click();
     return this;
   }
 

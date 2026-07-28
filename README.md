@@ -88,6 +88,7 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
 - Booking positive:
   - list bookings
   - list by firstname filter
+  - list by lastname filter
   - create booking
   - create booking with `additionalneeds = null`
   - get by id
@@ -105,6 +106,7 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
   - login with `problem_user`
   - login mandatory fields validation
   - add product to cart
+  - add two products to cart
   - remove product from cart
   - sort by price low-high
   - full checkout flow

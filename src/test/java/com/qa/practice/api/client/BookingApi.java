@@ -83,6 +83,18 @@ public class BookingApi {
         .response();
   }
 
+  @Step("GET /booking filtered by lastname")
+  public Response getBookingIdsByLastName(String lastName) {
+    return given()
+        .spec(RequestSpecs.base())
+        .queryParam("lastname", lastName)
+        .when()
+        .get("/booking")
+        .then()
+        .extract()
+        .response();
+  }
+
   @Step("GET /booking/{bookingId}")
   public Response getBooking(int bookingId) {
     return given()

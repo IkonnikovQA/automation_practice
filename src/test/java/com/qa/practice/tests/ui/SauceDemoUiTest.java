@@ -74,6 +74,26 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
   @Story("Cart")
+  @DisplayName("User can add two products to cart")
+  void userCanAddTwoProductsToCart() {
+    loginPage
+        .openPage()
+        .loginAs(Config.uiUsername(), Config.uiPassword())
+        .shouldBeOpened()
+        .addBackpackToCart()
+        .addBikeLightToCart()
+        .shouldHaveCartCount("2")
+        .openCart()
+        .shouldBeOpened()
+        .shouldHaveItemsCount(2);
+  }
+
+  @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
+  @Story("Cart")
   @DisplayName("User can remove product from cart")
   void userCanRemoveProductFromCart() {
     loginPage

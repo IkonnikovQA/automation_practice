@@ -216,6 +216,38 @@ public class BookingApiTest {
   }
 
   @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("List bookings")
+  @DisplayName("GET /booking supports lastname-only filter")
+  void getBookingIds_withLastNameFilter_containsCreatedBookingId() {
+    String suffix = UUID.randomUUID().toString().substring(0, 8);
+    Booking payload =
+        new Booking(
+            "AutoLast" + suffix,
+            "CaseLast" + suffix,
+            111,
+            true,
+            new BookingDates("2026-08-20", "2026-08-22"),
+            "Breakfast");
+    int bookingId = createAndTrackBooking(payload);
+
+    Response response = bookingApi.getBookingIdsByLastName(payload.lastname());
+    assertThat(response.statusCode()).isEqualTo(200);
+    response
+        .then()
+        .assertThat()
+        .body(matchesJsonSchemaInClasspath("schemas/booking-id-list-schema.json"));
+    List<Map<String, Integer>> ids = response.jsonPath().getList("$");
+    assertThat(ids).isNotEmpty();
+    assertThat(ids).anyMatch(item -> item.get("bookingid") == bookingId);
+  }
+
+  @Test
   @Tag("negative")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
