@@ -30,7 +30,7 @@ public class BookingApi {
         .response();
   }
 
-  @Step("POST /auth with custom payload")
+  @Step("POST /auth с произвольным payload")
   public Response createToken(Object body) {
     return given()
         .spec(RequestSpecs.base())
@@ -42,7 +42,7 @@ public class BookingApi {
         .response();
   }
 
-  @Step("Create auth token with default credentials")
+  @Step("Создать auth token с credentials по умолчанию")
   public String createToken() {
     AuthResponse auth =
         createToken(Config.authUsername(), Config.authPassword())
@@ -58,7 +58,7 @@ public class BookingApi {
     return given().spec(RequestSpecs.base()).when().get("/booking").then().extract().response();
   }
 
-  @Step("GET /booking filtered by firstname and lastname")
+  @Step("GET /booking с фильтром firstname и lastname")
   public Response getBookingIdsByName(String firstName, String lastName) {
     return given()
         .spec(RequestSpecs.base())
@@ -71,7 +71,7 @@ public class BookingApi {
         .response();
   }
 
-  @Step("GET /booking filtered by firstname")
+  @Step("GET /booking с фильтром firstname")
   public Response getBookingIdsByFirstName(String firstName) {
     return given()
         .spec(RequestSpecs.base())
@@ -83,7 +83,7 @@ public class BookingApi {
         .response();
   }
 
-  @Step("GET /booking filtered by lastname")
+  @Step("GET /booking с фильтром lastname")
   public Response getBookingIdsByLastName(String lastName) {
     return given()
         .spec(RequestSpecs.base())
@@ -118,11 +118,24 @@ public class BookingApi {
         .response();
   }
 
-  @Step("POST /booking with custom payload")
+  @Step("POST /booking с произвольным payload")
   public Response createBooking(Object payload) {
     return given()
         .spec(RequestSpecs.base())
         .body(payload)
+        .when()
+        .post("/booking")
+        .then()
+        .extract()
+        .response();
+  }
+
+  @Step("POST /booking с raw body и Content-Type")
+  public Response createBookingRaw(String rawBody, String contentType) {
+    return given()
+        .spec(RequestSpecs.base())
+        .contentType(contentType)
+        .body(rawBody)
         .when()
         .post("/booking")
         .then()
@@ -142,7 +155,7 @@ public class BookingApi {
         .response();
   }
 
-  @Step("PUT /booking/{bookingId} without auth token")
+  @Step("PUT /booking/{bookingId} без auth token")
   public Response updateBookingWithoutToken(int bookingId, Booking booking) {
     return given()
         .spec(RequestSpecs.base())
@@ -166,7 +179,7 @@ public class BookingApi {
         .response();
   }
 
-  @Step("PATCH /booking/{bookingId} without auth token")
+  @Step("PATCH /booking/{bookingId} без auth token")
   public Response partialUpdateBookingWithoutToken(int bookingId, Object patchBody) {
     return given()
         .spec(RequestSpecs.base())
@@ -189,7 +202,7 @@ public class BookingApi {
         .response();
   }
 
-  @Step("DELETE /booking/{bookingId} without auth token")
+  @Step("DELETE /booking/{bookingId} без auth token")
   public Response deleteBookingWithoutToken(int bookingId) {
     return given()
         .spec(RequestSpecs.base())
@@ -200,12 +213,12 @@ public class BookingApi {
         .response();
   }
 
-  @Step("Parse BookingResponse")
+  @Step("Разобрать BookingResponse")
   public BookingResponse asBookingResponse(Response response) {
     return response.as(BookingResponse.class);
   }
 
-  @Step("Parse Booking")
+  @Step("Разобрать Booking")
   public Booking asBooking(Response response) {
     return response.as(Booking.class);
   }

@@ -7,8 +7,8 @@ import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.FilterableResponseSpecification;
 
 /**
- * Minimal retry strategy for unstable public sandboxes. Retries only on 429 and 5xx to avoid
- * masking functional defects.
+ * Минимальная стратегия ретраев для нестабильных публичных sandbox. Повторяет запрос только при 429
+ * и 5xx, чтобы не маскировать функциональные дефекты.
  */
 public class RetryOnServerErrorFilter implements Filter {
 
@@ -29,6 +29,9 @@ public class RetryOnServerErrorFilter implements Filter {
     while (attempt <= maxAttempts) {
       try {
         response = ctx.next(requestSpec, responseSpec);
+        if (response == null) {
+          throw new IllegalStateException("Получен null HTTP-ответ от сервера");
+        }
         int statusCode = response.statusCode();
         if (!shouldRetry(statusCode) || attempt == maxAttempts) {
           return response;

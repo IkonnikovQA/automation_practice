@@ -14,14 +14,14 @@ public class LoginPage {
   private final SelenideElement loginButton = $("#login-button");
   private final SelenideElement errorMessage = $("h3[data-test='error']");
 
-  @Step("Open SauceDemo login page")
+  @Step("Открыть страницу логина SauceDemo")
   public LoginPage openPage() {
     open("/");
     usernameInput.shouldBe(visible);
     return this;
   }
 
-  @Step("Login as {username}")
+  @Step("Войти как {username}")
   public InventoryPage loginAs(String username, String password) {
     usernameInput.setValue(username);
     passwordInput.setValue(password);
@@ -29,13 +29,13 @@ public class LoginPage {
     return new InventoryPage();
   }
 
-  @Step("Login should fail with message: {message}")
+  @Step("Логин должен завершиться ошибкой: {message}")
   public LoginPage shouldShowError(String message) {
     errorMessage.shouldBe(visible).shouldHave(text(message));
     return this;
   }
 
-  @Step("Verify login page is displayed")
+  @Step("Проверить, что отображается страница логина")
   public LoginPage shouldBeOpened() {
     usernameInput.shouldBe(visible);
     loginButton.shouldBe(visible);

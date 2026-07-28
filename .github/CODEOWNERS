@@ -1,0 +1,19 @@
+# Default owner for all files
+* @IkonnikovQA
+
+# CI and automation process
+/.github/workflows/ @IkonnikovQA
+/Jenkinsfile @IkonnikovQA
+/docker-compose.yml @IkonnikovQA
+/Makefile @IkonnikovQA
+/scripts/ @IkonnikovQA
+
+# Test modules
+/api-tests/ @IkonnikovQA
+/ui-tests/ @IkonnikovQA
+/test-core/ @IkonnikovQA
+
+# Shared test source and docs
+/src/test/ @IkonnikovQA
+/README.md @IkonnikovQA
+/RUNBOOK.md @IkonnikovQA

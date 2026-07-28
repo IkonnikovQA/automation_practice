@@ -1,10 +1,14 @@
 # automation_practice
 
+[![CI](https://github.com/IkonnikovQA/automation_practice/actions/workflows/ci.yml/badge.svg)](https://github.com/IkonnikovQA/automation_practice/actions/workflows/ci.yml)
 [![Allure Report](https://img.shields.io/badge/Allure-Report-blue)](https://ikonnikovqa.github.io/automation_practice/#)
+[![Java](https://img.shields.io/badge/Java-17-orange)](https://openjdk.org/projects/jdk/17/)
+[![Maven](https://img.shields.io/badge/Maven-3.9+-C71A36)](https://maven.apache.org/)
+[![License](https://img.shields.io/badge/license-Portfolio-lightgrey)](README.md)
 
-API + UI automation framework for [Restful Booker](https://restful-booker.herokuapp.com/apidoc/index.html) and [SauceDemo](https://www.saucedemo.com/) with production-like test architecture and CI.
+Фреймворк автоматизации API + UI для [Restful Booker](https://restful-booker.herokuapp.com/apidoc/index.html) и [SauceDemo](https://www.saucedemo.com/) с архитектурой и CI, близкими к боевым проектам.
 
-## Tech stack
+## Стек
 
 - Java 17
 - Maven
@@ -15,17 +19,19 @@ API + UI automation framework for [Restful Booker](https://restful-booker.heroku
 - Allure
 - Spotless / Checkstyle / Enforcer
 
-## Project architecture
+## Архитектура проекта
 
 ```text
 automation_practice/
-├── pom.xml             # parent aggregator + dependency/plugin management
+├── pom.xml             # родительский агрегатор + управление зависимостями/плагинами
 ├── test-core/
-│   └── pom.xml         # shared config/specs/clients/page objects/builders (test-jar)
+│   └── pom.xml         # общий код: config/specs/clients/page objects/builders (test-jar)
 ├── api-tests/
-│   └── pom.xml         # API test module (AuthApiTest, BookingApiTest)
+│   └── pom.xml         # API-модуль (AuthApiTest, BookingApiTest)
 ├── ui-tests/
-│   └── pom.xml         # UI test module (SauceDemoUiTest)
+│   └── pom.xml         # UI-модуль (SauceDemoUiTest)
+├── docs/
+│   └── api-coverage.md # карта endpoint → тесты
 └── src/test/
     ├── java/com/qa/practice/
     │   ├── config/
@@ -39,76 +45,79 @@ automation_practice/
         └── categories.json
 ```
 
-## Key engineering decisions
+## Ключевые инженерные решения
 
-- Retry strategy for unstable public sandbox:
-  - retries only for `429` and `5xx`
-  - no retries for `4xx` to avoid hiding product bugs
-- Contract checks:
-  - JSON schema validation for auth and booking responses
-- Cleanup strategy:
-  - created booking ids are tracked and deleted in `@AfterEach`
-- Test data strategy:
-  - fluent builders for API booking payloads and UI checkout customer data
-- Test taxonomy:
+- Стратегия ретраев для нестабильного публичного sandbox:
+  - повторы только при `429` и `5xx`
+  - без ретраев на `4xx`, чтобы не маскировать баги продукта
+- Контрактные проверки:
+  - JSON Schema для auth и booking-ответов
+- Стратегия очистки:
+  - id созданных бронирований трекаются и удаляются в `@AfterEach`
+- Тестовые данные:
+  - fluent-builders для API booking и UI checkout
+- Таксономия тестов:
   - `@smoke`, `@regression`, `@negative`, `@contract`
-- Allure diagnostics:
-  - `environment.properties` is generated in CI for traceability
-  - `categories.json` groups failures by infrastructure, contract/data, regression
+- Диагностика Allure:
+  - в CI генерируется `environment.properties`
+  - `categories.json` группирует падения по инфраструктуре, контракту/данным и регрессии
 
-## Run locally
+## Локальный запуск
 
 ```bash
-# full regression
+# полная регрессия
 mvn clean test
 
-# smoke API set (fast checks)
+# smoke API (быстрые проверки)
 mvn -pl api-tests -am clean test -Psmoke-api
 
-# smoke UI set
+# smoke UI
 mvn -pl ui-tests -am clean test -Psmoke-ui
 
-# style & quality checks
+# стиль и quality-гейты (также привязаны к verify)
+mvn verify -DskipTests
 mvn spotless:check
 mvn checkstyle:check
 
-# allure report
+# Allure-отчёт
 mvn allure:serve
 ```
 
-## Run in Docker
+Демо-учётные данные Restful Booker: `admin` / `password123` (только публичный sandbox; переопределяются через env/system properties).
+
+## Запуск в Docker
 
 ```bash
-# build image
+# сборка образа
 docker compose build
 
-# API smoke in container
+# API smoke в контейнере
 docker compose --profile api run --rm api-smoke
 
-# UI smoke in containers (starts selenium + test runner)
+# UI smoke (поднимает selenium + runner)
 docker compose --profile ui up --abort-on-container-exit --exit-code-from ui-smoke ui-smoke
 
-# optional: open Selenium VNC in browser
-# http://localhost:7900 (password: secret)
+# опционально: Selenium VNC в браузере
+# http://localhost:7900 (пароль: secret)
 ```
 
-## One-command local runs
+## Однокомандные локальные прогоны
 
 ```bash
-# Make targets (Linux/macOS/WSL/Git Bash)
+# Make (Linux/macOS/WSL/Git Bash)
 make quality
 make api-smoke
 make ui-smoke
 make ci-local
 
-# Bash script
+# Bash-скрипт
 ./scripts/ci-local.sh all
 ./scripts/ci-local.sh quality
 ./scripts/ci-local.sh ui-smoke
 ```
 
 ```powershell
-# PowerShell script (Windows)
+# PowerShell (Windows)
 .\scripts\ci-local.ps1 -Stage all
 .\scripts\ci-local.ps1 -Stage quality
 .\scripts\ci-local.ps1 -Stage ui-smoke
@@ -124,81 +133,98 @@ make ci-local
 .\scripts\install-hooks.ps1
 ```
 
-Enabled hooks:
+Включённые hooks:
 
 - `pre-commit`: `spotless:check` + `checkstyle:check`
-- `pre-push`: smoke API profile (`-pl api-tests -am -Psmoke-api`)
+- `pre-push`: smoke API (`-pl api-tests -am -Psmoke-api`)
 
-Default auth: `admin` / `password123` (from Restful Booker docs).
+## CI
 
-## CI workflow
+GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):
 
-GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
+- `quality`: `mvn verify -DskipTests` (Spotless + Checkstyle + Enforcer)
+- `api-smoke`: API smoke (`-Psmoke-api`) на PR и ручной запуск
+- `ui-smoke`: UI smoke (`-Psmoke-ui`) на PR и ручной запуск с Selenium
+- `ui-smoke-diagnostics`: scheduled/manual UI smoke с одним rerun для диагностики флаков
+- `regression`: полная регрессия на push в `main`, schedule и manual (с Selenium)
+- `allure-report`: публикация отчёта на GitHub Pages при push в main / schedule / manual
+- артефакты Surefire + Allure для каждого тестового job
 
-- `quality` job: Spotless + Checkstyle
-- `api-smoke` job: API smoke (`-Psmoke-api`) on PR and manual trigger
-- `ui-smoke` job: UI smoke (`-Psmoke-ui`) on PR and manual trigger with Selenium service
-- `ui-smoke-diagnostics` job: scheduled/manual UI smoke with single rerun for flaky diagnostics
-- `regression` job: full regression on push to `main`, schedule, manual trigger
-- `allure-report` job: publishes merged regression report to GitHub Pages
-- Surefire + Allure artifacts upload for each test job
+Jenkins (`Jenkinsfile`):
 
-Jenkins pipeline (`Jenkinsfile`) includes:
+- `Quality`: Spotless + Checkstyle + Enforcer через `verify`
+- `Build Docker Image`: `docker compose build`
+- `API Smoke`: dockerized smoke для `AuthApiTest` + `BookingApiTest`
+- `UI Smoke`: dockerized smoke для `SauceDemoUiTest` с Selenium
+- архивация артефактов и публикация JUnit XML
 
-- `Quality` stage: Spotless + Checkstyle
-- `Build Docker Image` stage: `docker compose build`
-- `API Smoke` stage: dockerized smoke for `AuthApiTest` + `BookingApiTest`
-- `UI Smoke` stage: dockerized smoke for `SauceDemoUiTest` with Selenium container
-- archived test artifacts from API and UI stages and JUnit XML publication
+## Матрица владельцев / компонентов
 
-## Owner/component matrix
-
-- `Platform / CI`: `.github/workflows/api-tests.yml`, `Jenkinsfile`, `docker-compose.yml` (`@IkonnikovQA`)
+- `Platform / CI`: `.github/workflows/ci.yml`, `Jenkinsfile`, `docker-compose.yml` (`@IkonnikovQA`)
 - `API Client & Specs`: `com.qa.practice.api.*` (`@IkonnikovQA`)
-- `API Tests`: `AuthApiTest`, `BookingApiTest` (tags: `api`, `smoke`, `regression`, `negative`, `contract`)
+- `API Tests`: `AuthApiTest`, `BookingApiTest` (теги: `api`, `smoke`, `regression`, `negative`, `contract`)
 - `UI Framework`: `SelenideSetup`, `com.qa.practice.ui.pages.*` (`@IkonnikovQA`)
-- `UI Tests`: `SauceDemoUiTest` (tags: `ui`, `smoke`, `regression`, `negative`)
+- `UI Tests`: `SauceDemoUiTest` (теги: `ui`, `smoke`, `regression`, `negative`)
 
-## Coverage
+## Владение и эксплуатация
+
+- `CODEOWNERS`: [`.github/CODEOWNERS`](.github/CODEOWNERS)
+- Операционный гайд: [`RUNBOOK.md`](RUNBOOK.md)
+- Как контрибьютить: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Карта API: [`docs/api-coverage.md`](docs/api-coverage.md)
+- Changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- Рекомендуемый процесс:
+  - держать зелёными PR-проверки (`quality`, `api-smoke`, `ui-smoke`);
+  - использовать `ui-smoke-diagnostics` для трендов флаков;
+  - начинать разбор инцидентов с `RUNBOOK.md`.
+
+## Покрытие
 
 - Health: `GET /ping`
 - Auth:
-  - valid credentials
-  - invalid credentials
-- Booking positive:
-  - list bookings
-  - list by firstname filter
-  - list by lastname filter
-  - create booking
-  - create booking with `totalprice = 0`
-  - create booking with `additionalneeds = null`
-  - get by id
-  - full update (`PUT`)
-  - partial update (`PATCH`)
-  - delete
-- Booking negative:
-  - get non-existent id (`404`)
-  - update without token (`403`)
-  - update with invalid token (`403`)
-  - partial update without token (`403`)
-  - partial update with invalid token (`403`)
-  - delete without token (`403`)
+  - валидные credentials
+  - невалидные credentials
+- Booking (позитив):
+  - список бронирований
+  - фильтр по firstname
+  - фильтр по lastname
+  - создание booking
+  - создание с `totalprice = 0`
+  - создание с `additionalneeds = null`
+  - создание с `depositpaid = false`
+  - получение по id
+  - полное обновление (`PUT`) + повторное чтение
+  - частичное обновление (`PATCH`) firstname + повторное чтение
+  - частичное обновление (`PATCH`) нескольких полей + повторное чтение
+  - удаление
+- Booking (негатив):
+  - несуществующий id (`404`)
+  - создание с пустым телом / битым JSON / неверным Content-Type
+  - update без токена (`403`)
+  - update с невалидным токеном (`403`)
+  - partial update без токена (`403`)
+  - partial update с невалидным токеном (`403`)
+  - delete без токена (`403`)
+  - delete с невалидным токеном (`403`)
+  - повторный delete / delete несуществующего id
 - UI (SauceDemo):
-  - valid login
+  - успешный логин
   - logout
-  - login with `problem_user`
-  - login mandatory fields validation
-  - add product to cart
-  - add two products to cart
-  - remove product from cart
-  - sort by price low-high
-  - full checkout flow
-  - checkout mandatory fields validation
-  - locked out user error
-  - invalid password error
+  - логин `problem_user`
+  - валидация обязательных полей логина
+  - добавление товара в корзину
+  - добавление двух товаров
+  - удаление товара из корзины
+  - сортировка по цене low→high
+  - полный checkout
+  - валидация обязательных полей checkout
+  - ошибка locked out user
+  - ошибка неверного пароля
 
 ## Roadmap
 
-- Add separate UI Maven module (`ui-tests`)
-- Add API + UI hybrid flows
-- Publish generated Allure report to GitHub Pages
+- Физический перенос исходников по модулям (убрать `build-helper`)
+- Hybrid API + UI сценарии
+- Матрица пользователей SauceDemo (`performance_glitch_user`, `error_user`) + sort/product details
+- Browser matrix (Chrome/Firefox) и Dependabot/CodeQL
+- Visual / a11y / load (опционально, advanced)

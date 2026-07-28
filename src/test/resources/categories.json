@@ -1,16 +1,16 @@
 [
   {
-    "name": "Infrastructure / Environment",
+    "name": "Инфраструктура / окружение",
     "matchedStatuses": ["broken"],
     "messageRegex": ".*(SessionNotCreated|TimeoutException|ConnectException|UnknownHostException|WebDriver|Connection refused|NoSuchSession).*"
   },
   {
-    "name": "Test Data / Contract Drift",
+    "name": "Тестовые данные / дрейф контракта",
     "matchedStatuses": ["failed", "broken"],
     "messageRegex": ".*(schema|JsonSchema|Expected status code|statusCode\\(\\)).*"
   },
   {
-    "name": "Product Regression",
+    "name": "Регрессия продукта",
     "matchedStatuses": ["failed"]
   }
 ]

@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("API")
-@Feature("Bookings")
+@Feature("Бронирования")
 @Tag("api")
 @Tag("regression")
 public class BookingApiTest {
@@ -46,7 +46,7 @@ public class BookingApiTest {
       Response response = bookingApi.deleteBooking(bookingId, authToken);
       if (response.statusCode() != 201 && response.statusCode() != 404) {
         throw new AssertionError(
-            "Cleanup failed for bookingId=" + bookingId + ", status=" + response.statusCode());
+            "Очистка не удалась для bookingId=" + bookingId + ", status=" + response.statusCode());
       }
     }
     createdBookingIds.clear();
@@ -57,10 +57,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("List bookings")
-  @DisplayName("GET /booking returns list of booking ids")
+  @Story("Список бронирований")
+  @DisplayName("GET /booking возвращает список id бронирований")
   void getBookingIds_returnsList() {
     Response response = bookingApi.getBookingIds();
 
@@ -80,10 +80,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.BLOCKER)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Create booking")
-  @DisplayName("POST /booking creates a booking and returns id")
+  @Story("Создание бронирования")
+  @DisplayName("POST /booking создаёт бронирование и возвращает id")
   void createBooking_returnsIdAndBody() {
     Booking payload = TestDataFactory.randomBooking();
 
@@ -109,10 +109,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Create booking")
-  @DisplayName("POST /booking supports null additional needs")
+  @Story("Создание бронирования")
+  @DisplayName("POST /booking поддерживает null в additionalneeds")
   void createBooking_withNullAdditionalNeeds_returnsCreatedBooking() {
     Booking payload = BookingBuilder.random().withAdditionalneeds(null).build();
 
@@ -133,10 +133,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Create booking")
-  @DisplayName("POST /booking supports zero total price")
+  @Story("Создание бронирования")
+  @DisplayName("POST /booking поддерживает totalprice = 0")
   void createBooking_withZeroTotalPrice_returnsCreatedBooking() {
     Booking payload = BookingBuilder.random().withTotalprice(0).build();
 
@@ -156,15 +156,39 @@ public class BookingApiTest {
   }
 
   @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Документация Restful Booker API",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Создание бронирования")
+  @DisplayName("POST /booking поддерживает depositpaid=false")
+  void createBooking_withDepositNotPaid_returnsCreatedBooking() {
+    Booking payload = BookingBuilder.random().withDepositpaid(false).build();
+
+    Response response = bookingApi.createBooking(payload);
+
+    assertThat(response.statusCode()).isEqualTo(200);
+    BookingResponse created = bookingApi.asBookingResponse(response);
+    createdBookingIds.add(created.bookingid());
+    assertThat(created.booking().depositpaid()).isFalse();
+
+    Response refetchResponse = bookingApi.getBooking(created.bookingid());
+    assertThat(refetchResponse.statusCode()).isEqualTo(200);
+    assertThat(bookingApi.asBooking(refetchResponse).depositpaid()).isFalse();
+  }
+
+  @Test
   @Tag("smoke")
   @Tag("contract")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Get booking by id")
-  @DisplayName("GET /booking/{id} returns created booking")
+  @Story("Получение бронирования по id")
+  @DisplayName("GET /booking/{id} возвращает созданное бронирование")
   void getBookingById_returnsCreatedBooking() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -184,10 +208,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("List bookings")
-  @DisplayName("GET /booking supports firstname and lastname filters")
+  @Story("Список бронирований")
+  @DisplayName("GET /booking поддерживает фильтры firstname и lastname")
   void getBookingIds_withNameFilters_containsCreatedBookingId() {
     String suffix = UUID.randomUUID().toString().substring(0, 8);
     Booking payload =
@@ -216,10 +240,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("List bookings")
-  @DisplayName("GET /booking supports firstname-only filter")
+  @Story("Список бронирований")
+  @DisplayName("GET /booking поддерживает фильтр только по firstname")
   void getBookingIds_withFirstNameFilter_containsCreatedBookingId() {
     String suffix = UUID.randomUUID().toString().substring(0, 8);
     Booking payload =
@@ -248,10 +272,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("List bookings")
-  @DisplayName("GET /booking supports lastname-only filter")
+  @Story("Список бронирований")
+  @DisplayName("GET /booking поддерживает фильтр только по lastname")
   void getBookingIds_withLastNameFilter_containsCreatedBookingId() {
     String suffix = UUID.randomUUID().toString().substring(0, 8);
     Booking payload =
@@ -280,10 +304,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("List bookings")
-  @DisplayName("GET /booking with unknown filters returns empty list")
+  @Story("Список бронирований")
+  @DisplayName("GET /booking с неизвестными фильтрами возвращает пустой список")
   void getBookingIds_withUnknownNameFilters_returnsEmptyList() {
     String suffix = UUID.randomUUID().toString().substring(0, 8);
     Response response =
@@ -302,10 +326,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Update booking")
-  @DisplayName("PUT /booking/{id} updates booking with token")
+  @Story("Обновление бронирования")
+  @DisplayName("PUT /booking/{id} обновляет бронирование с токеном")
   void updateBooking_withToken_updatesFields() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -341,10 +365,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Partial update booking")
-  @DisplayName("PATCH /booking/{id} updates firstname only")
+  @Story("Частичное обновление бронирования")
+  @DisplayName("PATCH /booking/{id} обновляет только firstname")
   void partialUpdateBooking_updatesFirstname() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -366,14 +390,49 @@ public class BookingApiTest {
   }
 
   @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Документация Restful Booker API",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Частичное обновление бронирования")
+  @DisplayName("PATCH /booking/{id} обновляет несколько полей")
+  void partialUpdateBooking_updatesMultipleFields() {
+    Booking payload = TestDataFactory.randomBooking();
+    int bookingId = createAndTrackBooking(payload);
+    token = bookingApi.createToken();
+
+    Response response =
+        bookingApi.partialUpdateBooking(
+            bookingId,
+            Map.of("lastname", "MultiPatch", "totalprice", 777, "depositpaid", false),
+            this.token);
+
+    assertThat(response.statusCode()).isEqualTo(200);
+    Booking body = bookingApi.asBooking(response);
+    assertThat(body.firstname()).isEqualTo(payload.firstname());
+    assertThat(body.lastname()).isEqualTo("MultiPatch");
+    assertThat(body.totalprice()).isEqualTo(777);
+    assertThat(body.depositpaid()).isFalse();
+
+    Response refetchResponse = bookingApi.getBooking(bookingId);
+    assertThat(refetchResponse.statusCode()).isEqualTo(200);
+    Booking refetched = bookingApi.asBooking(refetchResponse);
+    assertThat(refetched.lastname()).isEqualTo("MultiPatch");
+    assertThat(refetched.totalprice()).isEqualTo(777);
+    assertThat(refetched.depositpaid()).isFalse();
+  }
+
+  @Test
   @Tag("smoke")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Delete booking")
-  @DisplayName("DELETE /booking/{id} removes booking")
+  @Story("Удаление бронирования")
+  @DisplayName("DELETE /booking/{id} удаляет бронирование")
   void deleteBooking_removesBooking() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -388,14 +447,116 @@ public class BookingApiTest {
   }
 
   @Test
+  @Tag("regression")
   @Tag("negative")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Get booking by id")
-  @DisplayName("GET /booking/{id} returns 404 for non-existent booking")
+  @Story("Удаление бронирования")
+  @DisplayName("DELETE /booking/{id} повторно возвращает not found или method not allowed")
+  void deleteBooking_twice_returnsClientError() {
+    Booking payload = TestDataFactory.randomBooking();
+    int bookingId = createAndTrackBooking(payload);
+    token = bookingApi.createToken();
+
+    Response firstDelete = bookingApi.deleteBooking(bookingId, this.token);
+    assertThat(firstDelete.statusCode()).isEqualTo(201);
+    createdBookingIds.remove(Integer.valueOf(bookingId));
+
+    Response secondDelete = bookingApi.deleteBooking(bookingId, this.token);
+    assertThat(secondDelete.statusCode()).isIn(404, 405);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Документация Restful Booker API",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Удаление бронирования")
+  @DisplayName("DELETE /booking/{id} для несуществующего id возвращает client error")
+  void deleteBooking_withNonExistentId_returnsClientError() {
+    token = bookingApi.createToken();
+
+    Response response = bookingApi.deleteBooking(999_999_999, this.token);
+    assertThat(response.statusCode()).isIn(404, 405);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Документация Restful Booker API",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Создание бронирования")
+  @DisplayName("POST /booking с пустым телом не создаёт бронирование")
+  void createBooking_withEmptyBody_returnsClientOrServerError() {
+    Response response = bookingApi.createBookingRaw(" ", "application/json");
+
+    assertThat(response.statusCode()).isGreaterThanOrEqualTo(400);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Документация Restful Booker API",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Создание бронирования")
+  @DisplayName("POST /booking с битым JSON не создаёт бронирование")
+  void createBooking_withMalformedJson_returnsClientOrServerError() {
+    Response response = bookingApi.createBookingRaw("{not-valid-json", "application/json");
+
+    assertThat(response.statusCode()).isGreaterThanOrEqualTo(400);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Документация Restful Booker API",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Создание бронирования")
+  @DisplayName("POST /booking с неверным Content-Type не создаёт бронирование")
+  void createBooking_withWrongContentType_returnsClientOrServerError() {
+    Booking payload = TestDataFactory.randomBooking();
+    String json =
+        "{\"firstname\":\""
+            + payload.firstname()
+            + "\",\"lastname\":\""
+            + payload.lastname()
+            + "\",\"totalprice\":"
+            + payload.totalprice()
+            + ",\"depositpaid\":"
+            + payload.depositpaid()
+            + ",\"bookingdates\":{\"checkin\":\""
+            + payload.bookingdates().checkin()
+            + "\",\"checkout\":\""
+            + payload.bookingdates().checkout()
+            + "\"},\"additionalneeds\":\""
+            + payload.additionalneeds()
+            + "\"}";
+
+    Response response = bookingApi.createBookingRaw(json, "application/xml");
+
+    assertThat(response.statusCode()).isGreaterThanOrEqualTo(400);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Документация Restful Booker API",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Получение бронирования по id")
+  @DisplayName("GET /booking/{id} возвращает 404 для несуществующего бронирования")
   void getBookingById_withNonExistentId_returnsNotFound() {
     Response response = bookingApi.getBooking(999_999_999);
 
@@ -407,10 +568,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Update booking")
-  @DisplayName("PUT /booking/{id} without token returns forbidden")
+  @Story("Обновление бронирования")
+  @DisplayName("PUT /booking/{id} без токена возвращает forbidden")
   void updateBooking_withoutToken_returnsForbidden() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -427,10 +588,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Update booking")
-  @DisplayName("PUT /booking/{id} with invalid token returns forbidden")
+  @Story("Обновление бронирования")
+  @DisplayName("PUT /booking/{id} с невалидным токеном возвращает forbidden")
   void updateBooking_withInvalidToken_returnsForbidden() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -446,10 +607,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Partial update booking")
-  @DisplayName("PATCH /booking/{id} without token returns forbidden")
+  @Story("Частичное обновление бронирования")
+  @DisplayName("PATCH /booking/{id} без токена возвращает forbidden")
   void partialUpdateBooking_withoutToken_returnsForbidden() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -464,10 +625,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Partial update booking")
-  @DisplayName("PATCH /booking/{id} with invalid token returns forbidden")
+  @Story("Частичное обновление бронирования")
+  @DisplayName("PATCH /booking/{id} с невалидным токеном возвращает forbidden")
   void partialUpdateBooking_withInvalidToken_returnsForbidden() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -483,10 +644,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Delete booking")
-  @DisplayName("DELETE /booking/{id} without token returns forbidden")
+  @Story("Удаление бронирования")
+  @DisplayName("DELETE /booking/{id} без токена возвращает forbidden")
   void deleteBooking_withoutToken_returnsForbidden() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);
@@ -500,10 +661,10 @@ public class BookingApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Delete booking")
-  @DisplayName("DELETE /booking/{id} with invalid token returns forbidden")
+  @Story("Удаление бронирования")
+  @DisplayName("DELETE /booking/{id} с невалидным токеном возвращает forbidden")
   void deleteBooking_withInvalidToken_returnsForbidden() {
     Booking payload = TestDataFactory.randomBooking();
     int bookingId = createAndTrackBooking(payload);

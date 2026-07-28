@@ -15,8 +15,7 @@ pipeline {
 
     stage('Quality') {
       steps {
-        sh 'mvn -B spotless:check'
-        sh 'mvn -B checkstyle:check'
+        sh 'mvn -B verify -DskipTests'
       }
     }
 

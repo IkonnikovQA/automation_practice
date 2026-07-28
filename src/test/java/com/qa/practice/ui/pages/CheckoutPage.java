@@ -18,13 +18,13 @@ public class CheckoutPage {
   private final SelenideElement completeHeader = $("h2[data-test='complete-header']");
   private final SelenideElement errorMessage = $("h3[data-test='error']");
 
-  @Step("Verify checkout step one opened")
+  @Step("Проверить, что открыт шаг 1 checkout")
   public CheckoutPage shouldBeStepOne() {
     title.shouldBe(visible).shouldHave(text("Checkout: Your Information"));
     return this;
   }
 
-  @Step("Fill checkout info: {firstName} {lastName}")
+  @Step("Заполнить данные покупателя: {firstName} {lastName}")
   public CheckoutPage fillCustomerInfo(String firstName, String lastName, String postalCode) {
     firstNameInput.setValue(firstName);
     lastNameInput.setValue(lastName);
@@ -33,12 +33,12 @@ public class CheckoutPage {
     return this;
   }
 
-  @Step("Fill checkout info from customer model")
+  @Step("Заполнить данные покупателя из модели")
   public CheckoutPage fillCustomerInfo(CheckoutCustomer customer) {
     return fillCustomerInfo(customer.firstName(), customer.lastName(), customer.postalCode());
   }
 
-  @Step("Submit checkout info: {firstName} {lastName} / {postalCode}")
+  @Step("Отправить данные покупателя: {firstName} {lastName} / {postalCode}")
   public CheckoutPage submitCustomerInfo(String firstName, String lastName, String postalCode) {
     firstNameInput.setValue(firstName);
     lastNameInput.setValue(lastName);
@@ -47,13 +47,13 @@ public class CheckoutPage {
     return this;
   }
 
-  @Step("Verify checkout error message: {expectedMessage}")
+  @Step("Проверить ошибку checkout: {expectedMessage}")
   public CheckoutPage shouldShowError(String expectedMessage) {
     errorMessage.shouldBe(visible).shouldHave(text(expectedMessage));
     return this;
   }
 
-  @Step("Complete checkout and verify success")
+  @Step("Завершить checkout и проверить успех")
   public CheckoutPage finishAndVerifySuccess() {
     title.shouldBe(visible).shouldHave(text("Checkout: Overview"));
     finishButton.shouldBe(visible).click();

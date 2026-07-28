@@ -6,10 +6,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 function Run-Quality {
-  mvn -B spotless:check
-  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-  mvn -B checkstyle:check
+  mvn -B verify -DskipTests
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 

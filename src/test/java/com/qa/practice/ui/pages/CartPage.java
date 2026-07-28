@@ -15,25 +15,25 @@ public class CartPage {
   private final ElementsCollection cartItems = $$("div[data-test='inventory-item']");
   private final SelenideElement checkoutButton = $("#checkout");
 
-  @Step("Verify cart page opened")
+  @Step("Проверить, что открыта корзина")
   public CartPage shouldBeOpened() {
     title.shouldBe(visible).shouldHave(text("Your Cart"));
     return this;
   }
 
-  @Step("Verify item {itemName} exists in cart")
+  @Step("Проверить наличие товара {itemName} в корзине")
   public CartPage shouldContainItem(String itemName) {
     cartItemName.shouldBe(visible).shouldHave(text(itemName));
     return this;
   }
 
-  @Step("Verify cart contains {count} items")
+  @Step("Проверить, что в корзине {count} товаров")
   public CartPage shouldHaveItemsCount(int count) {
     cartItems.shouldHave(com.codeborne.selenide.CollectionCondition.size(count));
     return this;
   }
 
-  @Step("Proceed to checkout")
+  @Step("Перейти к оформлению заказа")
   public CheckoutPage checkout() {
     checkoutButton.shouldBe(visible).click();
     return new CheckoutPage();

@@ -24,62 +24,62 @@ public class InventoryPage {
   private final SelenideElement sortDropdown = $("select[data-test='product-sort-container']");
   private final ElementsCollection itemNames = $$("div[data-test='inventory-item-name']");
 
-  @Step("Verify inventory page opened")
+  @Step("Проверить, что открыт каталог")
   public InventoryPage shouldBeOpened() {
     title.shouldBe(visible).shouldHave(text("Products"));
     inventoryItems.shouldHave(sizeGreaterThan(0));
     return this;
   }
 
-  @Step("Add backpack to cart")
+  @Step("Добавить рюкзак в корзину")
   public InventoryPage addBackpackToCart() {
     addBackpackButton.shouldBe(visible).click();
     return this;
   }
 
-  @Step("Add bike light to cart")
+  @Step("Добавить фонарь в корзину")
   public InventoryPage addBikeLightToCart() {
     addBikeLightButton.shouldBe(visible).click();
     return this;
   }
 
-  @Step("Verify cart badge count is {expectedCount}")
+  @Step("Проверить badge корзины: {expectedCount}")
   public InventoryPage shouldHaveCartCount(String expectedCount) {
     cartBadge.shouldBe(visible).shouldHave(text(expectedCount));
     return this;
   }
 
-  @Step("Remove backpack from cart")
+  @Step("Удалить рюкзак из корзины")
   public InventoryPage removeBackpackFromCart() {
     removeBackpackButton.shouldBe(visible).click();
     return this;
   }
 
-  @Step("Verify cart badge is not visible")
+  @Step("Проверить, что badge корзины скрыт")
   public InventoryPage shouldNotHaveCartBadge() {
     cartBadge.should(disappear);
     return this;
   }
 
-  @Step("Sort products by price low to high")
+  @Step("Отсортировать товары по цене low→high")
   public InventoryPage sortByPriceLowToHigh() {
     sortDropdown.selectOptionByValue("lohi");
     return this;
   }
 
-  @Step("Verify first product name is {expectedName}")
+  @Step("Проверить название первого товара: {expectedName}")
   public InventoryPage shouldHaveFirstItemName(String expectedName) {
     itemNames.first().shouldBe(visible).shouldHave(text(expectedName));
     return this;
   }
 
-  @Step("Open cart page")
+  @Step("Открыть корзину")
   public CartPage openCart() {
     cartLink.shouldBe(visible).click();
     return new CartPage();
   }
 
-  @Step("Logout from inventory page")
+  @Step("Выйти из аккаунта")
   public LoginPage logout() {
     burgerMenuButton.shouldBe(visible).click();
     logoutLink.shouldBe(visible).click();

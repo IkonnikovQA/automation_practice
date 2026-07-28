@@ -4,8 +4,7 @@ set -euo pipefail
 stage="${1:-all}"
 
 run_quality() {
-  mvn -B spotless:check
-  mvn -B checkstyle:check
+  mvn -B verify -DskipTests
 }
 
 run_api_smoke() {

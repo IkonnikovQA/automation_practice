@@ -13,8 +13,7 @@ help:
 	@echo "  ci-local     - Full local CI flow: quality + build + smokes"
 
 quality:
-	mvn -B spotless:check
-	mvn -B checkstyle:check
+	mvn -B verify -DskipTests
 
 api-smoke-local:
 	mvn -B -pl api-tests -am clean test -Psmoke-api

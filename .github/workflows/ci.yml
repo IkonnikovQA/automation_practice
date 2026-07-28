@@ -1,4 +1,4 @@
-name: API and UI Tests
+name: CI
 
 on:
   push:
@@ -31,27 +31,15 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Spotless format check
+      - name: Quality gates (Spotless + Checkstyle + Enforcer)
         run: |
           for attempt in 1 2 3; do
-            mvn -B spotless:check && break
+            mvn -B verify -DskipTests && break
             if [ "$attempt" -eq 3 ]; then
-              echo "Spotless failed after 3 attempts"
+              echo "Quality verify failed after 3 attempts"
               exit 1
             fi
-            echo "Retrying Spotless in 15s..."
-            sleep 15
-          done
-
-      - name: Checkstyle
-        run: |
-          for attempt in 1 2 3; do
-            mvn -B checkstyle:check && break
-            if [ "$attempt" -eq 3 ]; then
-              echo "Checkstyle failed after 3 attempts"
-              exit 1
-            fi
-            echo "Retrying Checkstyle in 15s..."
+            echo "Retrying quality verify in 15s..."
             sleep 15
           done
 
@@ -117,7 +105,7 @@ jobs:
     needs: quality
     services:
       selenium:
-        image: selenium/standalone-chrome:latest
+        image: selenium/standalone-chrome:4.27.0
         ports:
           - 4444:4444
         options: >-
@@ -187,7 +175,7 @@ jobs:
     continue-on-error: true
     services:
       selenium:
-        image: selenium/standalone-chrome:latest
+        image: selenium/standalone-chrome:4.27.0
         ports:
           - 4444:4444
         options: >-
@@ -255,6 +243,17 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     needs: quality
+    services:
+      selenium:
+        image: selenium/standalone-chrome:4.27.0
+        ports:
+          - 4444:4444
+        options: >-
+          --shm-size=2g
+          --health-cmd="wget -qO- http://localhost:4444/wd/hub/status | grep -q '\"ready\": true'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
 
     steps:
       - name: Checkout
@@ -279,13 +278,14 @@ jobs:
           run.attempt=${{ github.run_attempt }}
           actor=${{ github.actor }}
           suite=full
+          ui.remote.url=http://localhost:4444/wd/hub
           EOF
           cp api-tests/target/allure-results/environment.properties ui-tests/target/allure-results/environment.properties
 
       - name: Run full regression suite
         run: |
           for attempt in 1 2 3; do
-            mvn -B clean test && break
+            mvn -B clean test -Dui.remote.url=http://localhost:4444/wd/hub -Dui.headless=false && break
             if [ "$attempt" -eq 3 ]; then
               echo "Regression failed after 3 attempts"
               exit 1
@@ -318,7 +318,7 @@ jobs:
           path: ui-tests/target/allure-results/**
 
   allure-report:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     needs: regression
     environment:

@@ -30,8 +30,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.BLOCKER)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Login")
-  @DisplayName("Valid user can login and see inventory")
+  @Story("Логин")
+  @DisplayName("Валидный пользователь может войти и увидеть каталог")
   void validUserCanLogin() {
     loginPage.openPage().loginAs(Config.uiUsername(), Config.uiPassword()).shouldBeOpened();
   }
@@ -41,8 +41,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Login")
-  @DisplayName("User can logout to login page")
+  @Story("Логин")
+  @DisplayName("Пользователь может выйти на страницу логина")
   void userCanLogout() {
     loginPage
         .openPage()
@@ -57,8 +57,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Cart")
-  @DisplayName("User can add backpack to cart")
+  @Story("Корзина")
+  @DisplayName("Пользователь может добавить рюкзак в корзину")
   void userCanAddProductToCart() {
     loginPage
         .openPage()
@@ -73,8 +73,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Cart")
-  @DisplayName("User can add two products to cart")
+  @Story("Корзина")
+  @DisplayName("Пользователь может добавить два товара в корзину")
   void userCanAddTwoProductsToCart() {
     loginPage
         .openPage()
@@ -93,8 +93,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Cart")
-  @DisplayName("User can remove product from cart")
+  @Story("Корзина")
+  @DisplayName("Пользователь может удалить товар из корзины")
   void userCanRemoveProductFromCart() {
     loginPage
         .openPage()
@@ -111,8 +111,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Catalog")
-  @DisplayName("User can sort products by price low to high")
+  @Story("Каталог")
+  @DisplayName("Пользователь может отсортировать товары по цене low→high")
   void userCanSortProductsByPriceLowToHigh() {
     loginPage
         .openPage()
@@ -127,8 +127,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.BLOCKER)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Checkout")
-  @DisplayName("User can complete checkout flow")
+  @Story("Оформление заказа")
+  @DisplayName("Пользователь может пройти полный checkout")
   void userCanCompleteCheckoutFlow() {
     loginPage
         .openPage()
@@ -149,8 +149,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Cart")
-  @DisplayName("Problem user can add product to cart")
+  @Story("Корзина")
+  @DisplayName("Problem user может добавить товар в корзину")
   void problemUserCanAddProductToCart() {
     loginPage
         .openPage()
@@ -165,8 +165,8 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Login")
-  @DisplayName("Locked out user sees login error")
+  @Story("Логин")
+  @DisplayName("Locked out user видит ошибку логина")
   void lockedOutUserSeesError() {
     loginPage.openPage().loginAs("locked_out_user", Config.uiPassword());
 
@@ -178,34 +178,34 @@ public class SauceDemoUiTest extends BaseUiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Login")
-  @DisplayName("User sees error for invalid password")
+  @Story("Логин")
+  @DisplayName("Пользователь видит ошибку при неверном пароле")
   void invalidPasswordShowsError() {
     loginPage.openPage().loginAs(Config.uiUsername(), "wrong_password");
     loginPage.shouldShowError("Username and password do not match any user in this service");
   }
 
-  @ParameterizedTest(name = "{index}: login validation for \"{2}\"")
+  @ParameterizedTest(name = "{index}: валидация логина для \"{2}\"")
   @MethodSource("invalidLoginData")
   @Tag("negative")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Login")
-  @DisplayName("Login requires mandatory credentials")
+  @Story("Логин")
+  @DisplayName("Логин требует обязательные credentials")
   void loginShowsValidationErrors(String username, String password, String expectedMessage) {
     loginPage.openPage().loginAs(username, password);
     loginPage.shouldShowError(expectedMessage);
   }
 
-  @ParameterizedTest(name = "{index}: checkout validation for \"{3}\"")
+  @ParameterizedTest(name = "{index}: валидация checkout для \"{3}\"")
   @MethodSource("invalidCheckoutData")
   @Tag("negative")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
-  @Story("Checkout")
-  @DisplayName("Checkout requires mandatory customer fields")
+  @Story("Оформление заказа")
+  @DisplayName("Checkout требует обязательные поля покупателя")
   void checkoutShowsValidationErrors(
       String firstName, String lastName, String postalCode, String expectedMessage) {
     loginPage

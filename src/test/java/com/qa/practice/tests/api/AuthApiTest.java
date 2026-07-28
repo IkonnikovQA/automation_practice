@@ -23,7 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 @Epic("API")
-@Feature("Health & Auth")
+@Feature("Health и Auth")
 @Tag("api")
 @Tag("regression")
 public class AuthApiTest {
@@ -35,10 +35,10 @@ public class AuthApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Health check")
-  @DisplayName("GET /ping returns Created")
+  @Story("Проверка доступности")
+  @DisplayName("GET /ping возвращает Created")
   void ping_returnsCreated() {
     Response response = bookingApi.ping();
 
@@ -52,10 +52,10 @@ public class AuthApiTest {
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.BLOCKER)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Create token")
-  @DisplayName("POST /auth returns token for valid credentials")
+  @Story("Создание токена")
+  @DisplayName("POST /auth возвращает token для валидных credentials")
   void auth_withValidCredentials_returnsToken() {
     Response response = bookingApi.createToken(Config.authUsername(), Config.authPassword());
 
@@ -68,16 +68,16 @@ public class AuthApiTest {
     assertThat(auth.token()).isNotBlank();
   }
 
-  @ParameterizedTest(name = "{index}: invalid auth payload => reason Bad credentials")
+  @ParameterizedTest(name = "{index}: невалидный auth payload => reason Bad credentials")
   @MethodSource("invalidAuthPayloads")
   @Tag("negative")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
   @Link(
-      name = "Restful Booker API Docs",
+      name = "Документация Restful Booker API",
       url = "https://restful-booker.herokuapp.com/apidoc/index.html")
-  @Story("Create token")
-  @DisplayName("POST /auth handles invalid credentials")
+  @Story("Создание токена")
+  @DisplayName("POST /auth обрабатывает невалидные credentials")
   void auth_withInvalidCredentials_returnsReason(Map<String, Object> payload) {
     Response response = bookingApi.createToken(payload);
     assertThat(response.statusCode()).isEqualTo(200);
