@@ -43,6 +43,8 @@ src/test/resources/
   - JSON schema validation for auth and booking responses
 - Cleanup strategy:
   - created booking ids are tracked and deleted in `@AfterEach`
+- Test data strategy:
+  - fluent builders for API booking payloads and UI checkout customer data
 - Test taxonomy:
   - `@smoke`, `@regression`, `@negative`, `@contract`
 
@@ -87,6 +89,7 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
   - list bookings
   - list by firstname filter
   - create booking
+  - create booking with `additionalneeds = null`
   - get by id
   - full update (`PUT`)
   - partial update (`PATCH`)
@@ -99,6 +102,7 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
 - UI (SauceDemo):
   - valid login
   - logout
+  - login with `problem_user`
   - login mandatory fields validation
   - add product to cart
   - remove product from cart

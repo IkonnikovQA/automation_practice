@@ -7,6 +7,7 @@ import com.qa.practice.api.client.BookingApi;
 import com.qa.practice.api.models.Booking;
 import com.qa.practice.api.models.BookingDates;
 import com.qa.practice.api.models.BookingResponse;
+import com.qa.practice.data.builders.BookingBuilder;
 import com.qa.practice.data.TestDataFactory;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -101,6 +102,29 @@ public class BookingApiTest {
     assertThat(created.booking().totalprice()).isEqualTo(payload.totalprice());
     assertThat(created.booking().bookingdates().checkin())
         .isEqualTo(payload.bookingdates().checkin());
+  }
+
+  @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Create booking")
+  @DisplayName("POST /booking supports null additional needs")
+  void createBooking_withNullAdditionalNeeds_returnsCreatedBooking() {
+    Booking payload = BookingBuilder.random().withAdditionalneeds(null).build();
+
+    Response response = bookingApi.createBooking(payload);
+
+    assertThat(response.statusCode()).isEqualTo(200);
+    BookingResponse created = bookingApi.asBookingResponse(response);
+    createdBookingIds.add(created.bookingid());
+    assertThat(created.bookingid()).isPositive();
+    assertThat(created.booking().firstname()).isEqualTo(payload.firstname());
+    assertThat(created.booking().lastname()).isEqualTo(payload.lastname());
+    assertThat(created.booking().additionalneeds()).isNull();
   }
 
   @Test

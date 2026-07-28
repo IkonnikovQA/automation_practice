@@ -1,6 +1,7 @@
 package com.qa.practice.tests.ui;
 
 import com.qa.practice.config.Config;
+import com.qa.practice.data.builders.CheckoutCustomerBuilder;
 import com.qa.practice.ui.pages.LoginPage;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
@@ -119,8 +120,24 @@ public class SauceDemoUiTest extends BaseUiTest {
         .shouldContainItem("Sauce Labs Backpack")
         .checkout()
         .shouldBeStepOne()
-        .fillCustomerInfo("Oleg", "QA", "123456")
+        .fillCustomerInfo(CheckoutCustomerBuilder.valid().build())
         .finishAndVerifySuccess();
+  }
+
+  @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
+  @Story("Cart")
+  @DisplayName("Problem user can add product to cart")
+  void problemUserCanAddProductToCart() {
+    loginPage
+        .openPage()
+        .loginAs("problem_user", Config.uiPassword())
+        .shouldBeOpened()
+        .addBackpackToCart()
+        .shouldHaveCartCount("1");
   }
 
   @Test

@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.SelenideElement;
+import com.qa.practice.ui.models.CheckoutCustomer;
 import io.qameta.allure.Step;
 
 public class CheckoutPage {
@@ -30,6 +31,11 @@ public class CheckoutPage {
     postalCodeInput.setValue(postalCode);
     continueButton.shouldBe(visible).click();
     return this;
+  }
+
+  @Step("Fill checkout info from customer model")
+  public CheckoutPage fillCustomerInfo(CheckoutCustomer customer) {
+    return fillCustomerInfo(customer.firstName(), customer.lastName(), customer.postalCode());
   }
 
   @Step("Submit checkout info: {firstName} {lastName} / {postalCode}")
