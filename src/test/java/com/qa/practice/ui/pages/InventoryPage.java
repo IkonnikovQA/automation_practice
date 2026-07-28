@@ -12,17 +12,17 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 public class InventoryPage {
-  private final SelenideElement title = $(".title");
+  private final SelenideElement title = $("span[data-test='title']");
   private final ElementsCollection inventoryItems = $$(".inventory_item");
   private final SelenideElement addBackpackButton = $("#add-to-cart-sauce-labs-backpack");
   private final SelenideElement addBikeLightButton = $("#add-to-cart-sauce-labs-bike-light");
   private final SelenideElement removeBackpackButton = $("#remove-sauce-labs-backpack");
-  private final SelenideElement cartBadge = $(".shopping_cart_badge");
-  private final SelenideElement cartLink = $(".shopping_cart_link");
+  private final SelenideElement cartBadge = $("span[data-test='shopping-cart-badge']");
+  private final SelenideElement cartLink = $("a[data-test='shopping-cart-link']");
   private final SelenideElement burgerMenuButton = $("#react-burger-menu-btn");
   private final SelenideElement logoutLink = $("#logout_sidebar_link");
-  private final SelenideElement sortDropdown = $(".product_sort_container");
-  private final ElementsCollection itemNames = $$(".inventory_item_name");
+  private final SelenideElement sortDropdown = $("select[data-test='product-sort-container']");
+  private final ElementsCollection itemNames = $$("div[data-test='inventory-item-name']");
 
   @Step("Verify inventory page opened")
   public InventoryPage shouldBeOpened() {

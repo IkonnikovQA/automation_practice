@@ -9,13 +9,13 @@ import com.qa.practice.ui.models.CheckoutCustomer;
 import io.qameta.allure.Step;
 
 public class CheckoutPage {
-  private final SelenideElement title = $(".title");
+  private final SelenideElement title = $("span[data-test='title']");
   private final SelenideElement firstNameInput = $("#first-name");
   private final SelenideElement lastNameInput = $("#last-name");
   private final SelenideElement postalCodeInput = $("#postal-code");
   private final SelenideElement continueButton = $("#continue");
   private final SelenideElement finishButton = $("#finish");
-  private final SelenideElement completeHeader = $(".complete-header");
+  private final SelenideElement completeHeader = $("h2[data-test='complete-header']");
   private final SelenideElement errorMessage = $("h3[data-test='error']");
 
   @Step("Verify checkout step one opened")

@@ -128,6 +128,34 @@ public class BookingApiTest {
   }
 
   @Test
+  @Tag("regression")
+  @Tag("contract")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Create booking")
+  @DisplayName("POST /booking supports zero total price")
+  void createBooking_withZeroTotalPrice_returnsCreatedBooking() {
+    Booking payload = BookingBuilder.random().withTotalprice(0).build();
+
+    Response response = bookingApi.createBooking(payload);
+
+    assertThat(response.statusCode()).isEqualTo(200);
+    response
+        .then()
+        .assertThat()
+        .body(matchesJsonSchemaInClasspath("schemas/booking-create-response-schema.json"));
+    BookingResponse created = bookingApi.asBookingResponse(response);
+    createdBookingIds.add(created.bookingid());
+    assertThat(created.bookingid()).isPositive();
+    assertThat(created.booking().totalprice()).isZero();
+    assertThat(created.booking().firstname()).isEqualTo(payload.firstname());
+    assertThat(created.booking().lastname()).isEqualTo(payload.lastname());
+  }
+
+  @Test
   @Tag("smoke")
   @Tag("contract")
   @Owner("IkonnikovQA")
@@ -410,6 +438,43 @@ public class BookingApiTest {
     Booking updated = new Booking("Invalid", "Token", 333, true, payload.bookingdates(), "None");
 
     Response response = bookingApi.updateBooking(bookingId, updated, "not-a-valid-token");
+    assertThat(response.statusCode()).isEqualTo(403);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Partial update booking")
+  @DisplayName("PATCH /booking/{id} without token returns forbidden")
+  void partialUpdateBooking_withoutToken_returnsForbidden() {
+    Booking payload = TestDataFactory.randomBooking();
+    int bookingId = createAndTrackBooking(payload);
+
+    Response response =
+        bookingApi.partialUpdateBookingWithoutToken(bookingId, Map.of("firstname", "NoAuthPatch"));
+    assertThat(response.statusCode()).isEqualTo(403);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Partial update booking")
+  @DisplayName("PATCH /booking/{id} with invalid token returns forbidden")
+  void partialUpdateBooking_withInvalidToken_returnsForbidden() {
+    Booking payload = TestDataFactory.randomBooking();
+    int bookingId = createAndTrackBooking(payload);
+
+    Response response =
+        bookingApi.partialUpdateBooking(
+            bookingId, Map.of("firstname", "InvalidPatch"), "not-a-valid-token");
     assertThat(response.statusCode()).isEqualTo(403);
   }
 

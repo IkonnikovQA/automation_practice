@@ -16,22 +16,25 @@ API + UI automation framework for [Restful Booker](https://restful-booker.heroku
 ## Project architecture
 
 ```text
-src/test/java/com/qa/practice/
-├── config/             # config loader + env/system overrides
-├── api/
-│   ├── client/         # BookingApi: endpoint wrapper methods
-│   ├── models/         # DTO records
-│   └── specs/          # base spec + token spec + retry filter
-├── data/               # test data factory/builders
-└── tests/
-    ├── api/
-    │   ├── AuthApiTest
-    │   └── BookingApiTest
-    └── ui/
-        └── SauceDemoUiTest
-
-src/test/resources/
-└── schemas/            # JSON Schema contracts
+automation_practice/
+├── pom.xml             # parent aggregator + dependency/plugin management
+├── test-core/
+│   └── pom.xml         # shared config/specs/clients/page objects/builders (test-jar)
+├── api-tests/
+│   └── pom.xml         # API test module (AuthApiTest, BookingApiTest)
+├── ui-tests/
+│   └── pom.xml         # UI test module (SauceDemoUiTest)
+└── src/test/
+    ├── java/com/qa/practice/
+    │   ├── config/
+    │   ├── api/
+    │   ├── data/
+    │   ├── ui/
+    │   └── tests/
+    └── resources/
+        ├── schemas/
+        ├── allure.properties
+        └── categories.json
 ```
 
 ## Key engineering decisions
@@ -47,6 +50,9 @@ src/test/resources/
   - fluent builders for API booking payloads and UI checkout customer data
 - Test taxonomy:
   - `@smoke`, `@regression`, `@negative`, `@contract`
+- Allure diagnostics:
+  - `environment.properties` is generated in CI for traceability
+  - `categories.json` groups failures by infrastructure, contract/data, regression
 
 ## Run locally
 
@@ -55,10 +61,10 @@ src/test/resources/
 mvn clean test
 
 # smoke API set (fast checks)
-mvn clean test -Psmoke-api
+mvn -pl api-tests -am clean test -Psmoke-api
 
 # smoke UI set
-mvn clean test -Psmoke-ui
+mvn -pl ui-tests -am clean test -Psmoke-ui
 
 # style & quality checks
 mvn spotless:check
@@ -106,6 +112,21 @@ make ci-local
 .\scripts\ci-local.ps1 -Stage ui-smoke
 ```
 
+## Git hooks
+
+```bash
+# Linux/macOS/WSL
+./scripts/install-hooks.sh
+
+# Windows PowerShell
+.\scripts\install-hooks.ps1
+```
+
+Enabled hooks:
+
+- `pre-commit`: `spotless:check` + `checkstyle:check`
+- `pre-push`: smoke API profile (`-pl api-tests -am -Psmoke-api`)
+
 Default auth: `admin` / `password123` (from Restful Booker docs).
 
 ## CI workflow
@@ -115,7 +136,9 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
 - `quality` job: Spotless + Checkstyle
 - `api-smoke` job: API smoke (`-Psmoke-api`) on PR and manual trigger
 - `ui-smoke` job: UI smoke (`-Psmoke-ui`) on PR and manual trigger with Selenium service
+- `ui-smoke-diagnostics` job: scheduled/manual UI smoke with single rerun for flaky diagnostics
 - `regression` job: full regression on push to `main`, schedule, manual trigger
+- `allure-report` job: publishes merged regression report to GitHub Pages
 - Surefire + Allure artifacts upload for each test job
 
 Jenkins pipeline (`Jenkinsfile`) includes:
@@ -124,7 +147,15 @@ Jenkins pipeline (`Jenkinsfile`) includes:
 - `Build Docker Image` stage: `docker compose build`
 - `API Smoke` stage: dockerized smoke for `AuthApiTest` + `BookingApiTest`
 - `UI Smoke` stage: dockerized smoke for `SauceDemoUiTest` with Selenium container
-- archived test artifacts from API and UI stages
+- archived test artifacts from API and UI stages and JUnit XML publication
+
+## Owner/component matrix
+
+- `Platform / CI`: `.github/workflows/api-tests.yml`, `Jenkinsfile`, `docker-compose.yml` (`@IkonnikovQA`)
+- `API Client & Specs`: `com.qa.practice.api.*` (`@IkonnikovQA`)
+- `API Tests`: `AuthApiTest`, `BookingApiTest` (tags: `api`, `smoke`, `regression`, `negative`, `contract`)
+- `UI Framework`: `SelenideSetup`, `com.qa.practice.ui.pages.*` (`@IkonnikovQA`)
+- `UI Tests`: `SauceDemoUiTest` (tags: `ui`, `smoke`, `regression`, `negative`)
 
 ## Coverage
 
@@ -137,6 +168,7 @@ Jenkins pipeline (`Jenkinsfile`) includes:
   - list by firstname filter
   - list by lastname filter
   - create booking
+  - create booking with `totalprice = 0`
   - create booking with `additionalneeds = null`
   - get by id
   - full update (`PUT`)
@@ -146,6 +178,8 @@ Jenkins pipeline (`Jenkinsfile`) includes:
   - get non-existent id (`404`)
   - update without token (`403`)
   - update with invalid token (`403`)
+  - partial update without token (`403`)
+  - partial update with invalid token (`403`)
   - delete without token (`403`)
 - UI (SauceDemo):
   - valid login

@@ -33,8 +33,8 @@ pipeline {
       post {
         always {
           sh 'mkdir -p artifacts/api'
-          sh 'cp -r target/surefire-reports artifacts/api/ || true'
-          sh 'cp -r target/allure-results artifacts/api/ || true'
+          sh 'cp -r api-tests/target/surefire-reports artifacts/api/ || true'
+          sh 'cp -r api-tests/target/allure-results artifacts/api/ || true'
         }
       }
     }
@@ -47,8 +47,8 @@ pipeline {
         always {
           sh 'docker compose --profile ui down -v || true'
           sh 'mkdir -p artifacts/ui'
-          sh 'cp -r target/surefire-reports artifacts/ui/ || true'
-          sh 'cp -r target/allure-results artifacts/ui/ || true'
+          sh 'cp -r ui-tests/target/surefire-reports artifacts/ui/ || true'
+          sh 'cp -r ui-tests/target/allure-results artifacts/ui/ || true'
         }
       }
     }
@@ -57,7 +57,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'artifacts/**', allowEmptyArchive: true
-      junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+      junit testResults: 'api-tests/target/surefire-reports/*.xml,ui-tests/target/surefire-reports/*.xml', allowEmptyResults: true
     }
   }
 }

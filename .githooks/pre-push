@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[pre-push] Running smoke API profile..."
+mvn -B -Psmoke-api test
+echo "[pre-push] Smoke API passed."

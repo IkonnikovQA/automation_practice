@@ -17,10 +17,10 @@ quality:
 	mvn -B checkstyle:check
 
 api-smoke-local:
-	mvn -B clean test -Psmoke-api
+	mvn -B -pl api-tests -am clean test -Psmoke-api
 
 ui-smoke-local:
-	mvn -B clean test -Psmoke-ui
+	mvn -B -pl ui-tests -am clean test -Psmoke-ui
 
 docker-build:
 	docker compose build

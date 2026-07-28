@@ -166,6 +166,18 @@ public class BookingApi {
         .response();
   }
 
+  @Step("PATCH /booking/{bookingId} without auth token")
+  public Response partialUpdateBookingWithoutToken(int bookingId, Object patchBody) {
+    return given()
+        .spec(RequestSpecs.base())
+        .body(patchBody)
+        .when()
+        .patch("/booking/{id}", bookingId)
+        .then()
+        .extract()
+        .response();
+  }
+
   @Step("DELETE /booking/{bookingId}")
   public Response deleteBooking(int bookingId, String token) {
     return given()

@@ -10,9 +10,9 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 public class CartPage {
-  private final SelenideElement title = $(".title");
-  private final SelenideElement cartItemName = $(".inventory_item_name");
-  private final ElementsCollection cartItems = $$(".cart_item");
+  private final SelenideElement title = $("span[data-test='title']");
+  private final SelenideElement cartItemName = $("div[data-test='inventory-item-name']");
+  private final ElementsCollection cartItems = $$("div[data-test='inventory-item']");
   private final SelenideElement checkoutButton = $("#checkout");
 
   @Step("Verify cart page opened")

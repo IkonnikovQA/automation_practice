@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[pre-commit] Running code quality checks..."
+mvn -B spotless:check
+mvn -B checkstyle:check
+echo "[pre-commit] Quality checks passed."

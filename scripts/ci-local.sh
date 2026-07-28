@@ -8,20 +8,12 @@ run_quality() {
   mvn -B checkstyle:check
 }
 
-run_build() {
-  docker compose build
-}
-
 run_api_smoke() {
-  docker compose --profile api run --rm api-smoke
+  mvn -B -pl api-tests -am clean test -Psmoke-api
 }
 
 run_ui_smoke() {
-  docker compose --profile ui up --abort-on-container-exit --exit-code-from ui-smoke ui-smoke
-}
-
-cleanup() {
-  docker compose --profile ui down -v || true
+  mvn -B -pl ui-tests -am clean test -Psmoke-ui
 }
 
 case "$stage" in
@@ -29,21 +21,19 @@ case "$stage" in
     run_quality
     ;;
   build)
-    run_build
+    docker compose build
     ;;
   api-smoke)
     run_api_smoke
     ;;
   ui-smoke)
     run_ui_smoke
-    cleanup
     ;;
   all)
     run_quality
-    run_build
+    docker compose build
     run_api_smoke
     run_ui_smoke
-    cleanup
     ;;
   *)
     echo "Unknown stage: $stage"

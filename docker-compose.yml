@@ -14,7 +14,7 @@ services:
   api-smoke:
     build: .
     profiles: ["api"]
-    command: ["mvn", "-Psmoke-api", "-Dtest=AuthApiTest,BookingApiTest", "test"]
+    command: ["mvn", "-pl", "api-tests", "-am", "-Psmoke-api", "-Dtest=AuthApiTest,BookingApiTest", "test"]
 
   ui-smoke:
     build: .
@@ -26,4 +26,4 @@ services:
       UI_REMOTE_URL: http://selenium:4444/wd/hub
       UI_HEADLESS: "false"
       UI_BROWSER: chrome
-    command: ["mvn", "-Psmoke-ui", "-Dtest=SauceDemoUiTest", "test"]
+    command: ["mvn", "-pl", "ui-tests", "-am", "-Psmoke-ui", "-Dtest=SauceDemoUiTest", "test"]

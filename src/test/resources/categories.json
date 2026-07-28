@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Infrastructure / Environment",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*(SessionNotCreated|TimeoutException|ConnectException|UnknownHostException|WebDriver|Connection refused|NoSuchSession).*"
+  },
+  {
+    "name": "Test Data / Contract Drift",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*(schema|JsonSchema|Expected status code|statusCode\\(\\)).*"
+  },
+  {
+    "name": "Product Regression",
+    "matchedStatuses": ["failed"]
+  }
+]

@@ -19,17 +19,13 @@ function Run-Build {
 }
 
 function Run-ApiSmoke {
-  docker compose --profile api run --rm api-smoke
+  mvn -B -pl api-tests -am clean test -Psmoke-api
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
 function Run-UiSmoke {
-  docker compose --profile ui up --abort-on-container-exit --exit-code-from ui-smoke ui-smoke
+  mvn -B -pl ui-tests -am clean test -Psmoke-ui
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-}
-
-function Cleanup-Docker {
-  docker compose --profile ui down -v
 }
 
 switch ($Stage) {
@@ -43,22 +39,12 @@ switch ($Stage) {
     Run-ApiSmoke
   }
   "ui-smoke" {
-    try {
-      Run-UiSmoke
-    }
-    finally {
-      Cleanup-Docker
-    }
+    Run-UiSmoke
   }
   "all" {
-    try {
-      Run-Quality
-      Run-Build
-      Run-ApiSmoke
-      Run-UiSmoke
-    }
-    finally {
-      Cleanup-Docker
-    }
+    Run-Quality
+    Run-Build
+    Run-ApiSmoke
+    Run-UiSmoke
   }
 }
