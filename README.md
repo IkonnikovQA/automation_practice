@@ -1,59 +1,98 @@
 # automation_practice
 
-API automation framework for [Restful Booker](https://restful-booker.herokuapp.com/apidoc/index.html).
+API automation framework for [Restful Booker](https://restful-booker.herokuapp.com/apidoc/index.html) with production-like test architecture and CI.
 
-UI layer will be added later.
+## Tech stack
 
-## Stack
+- Java 17
+- Maven
+- JUnit 5
+- REST Assured
+- AssertJ
+- Allure
+- Spotless / Checkstyle / Enforcer
 
-| Layer | Tool |
-|-------|------|
-| Java | 17 |
-| Build | Maven |
-| Tests | JUnit 5 |
-| API | REST Assured |
-| Reports | Allure |
-| Assertions | AssertJ |
+## Project architecture
 
-## Architecture
-
-```
+```text
 src/test/java/com/qa/practice/
-├── config/           # config.properties + env/system overrides
+├── config/             # config loader + env/system overrides
 ├── api/
-│   ├── client/       # BookingApi
-│   ├── models/       # Booking, Auth DTOs (records)
-│   └── specs/        # RequestSpecification
-├── data/             # TestDataFactory
-└── tests/api/        # Auth + Booking tests
+│   ├── client/         # BookingApi: endpoint wrapper methods
+│   ├── models/         # DTO records
+│   └── specs/          # base spec + token spec + retry filter
+├── data/               # test data factory/builders
+└── tests/api/
+    ├── AuthApiTest
+    └── BookingApiTest
+
+src/test/resources/
+└── schemas/            # JSON Schema contracts
 ```
 
-## Run
+## Key engineering decisions
+
+- Retry strategy for unstable public sandbox:
+  - retries only for `429` and `5xx`
+  - no retries for `4xx` to avoid hiding product bugs
+- Contract checks:
+  - JSON schema validation for auth and booking responses
+- Cleanup strategy:
+  - created booking ids are tracked and deleted in `@AfterEach`
+- Test taxonomy:
+  - `@smoke`, `@regression`, `@negative`, `@contract`
+
+## Run locally
 
 ```bash
+# full regression
 mvn clean test
+
+# smoke set (fast checks)
 mvn clean test -Dgroups=smoke
+
+# style & quality checks
+mvn spotless:check
+mvn checkstyle:check
+
+# allure report
 mvn allure:serve
 ```
 
-## Coverage (v1)
-
-| Endpoint | Cases |
-|----------|--------|
-| `GET /ping` | health |
-| `POST /auth` | valid / invalid credentials |
-| `GET /booking` | list ids |
-| `POST /booking` | create |
-| `GET /booking/{id}` | get by id |
-| `PUT /booking/{id}` | full update (cookie token) |
-| `PATCH /booking/{id}` | partial update |
-| `DELETE /booking/{id}` | delete + 404 after |
-
 Default auth: `admin` / `password123` (from Restful Booker docs).
 
-## Next
+## CI workflow
 
-- Negative cases (missing fields, unauthorized update)
-- JSON Schema checks
-- UI layer (separate target)
-- GitHub Actions + Allure artifacts
+GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
+
+- `quality` job: Spotless + Checkstyle
+- `smoke` job: runs on PR and manual trigger
+- `regression` job: runs on push to `main`, schedule, manual trigger
+- Surefire + Allure artifacts upload for each test job
+
+## Coverage
+
+- Health: `GET /ping`
+- Auth:
+  - valid credentials
+  - invalid credentials
+  - malformed body
+- Booking positive:
+  - list bookings
+  - create booking
+  - get by id
+  - full update (`PUT`)
+  - partial update (`PATCH`)
+  - delete
+- Booking negative:
+  - get non-existent id (`404`)
+  - update without token (`403`)
+  - update with invalid token (`403`)
+  - delete without token (`403`)
+  - invalid create payloads (`400`)
+
+## Roadmap
+
+- Add UI module (`ui-tests`) with Selenide
+- Add API + UI hybrid flows
+- Publish generated Allure report to GitHub Pages
