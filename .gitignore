@@ -1,0 +1,29 @@
+# Build
+target/
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+out/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Reports
+allure-results/
+allure-report/
+*.log
+
+# Env / secrets
+.env
+config.local.properties
