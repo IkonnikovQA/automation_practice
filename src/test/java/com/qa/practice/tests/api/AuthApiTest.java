@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Epic("API")
@@ -47,6 +49,16 @@ public class AuthApiTest {
     @DisplayName("POST /auth fails for invalid credentials")
     void auth_withInvalidCredentials_returnsReason() {
         Response response = bookingApi.createToken("wrong", "wrong");
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getString("reason")).isEqualTo("Bad credentials");
+    }
+
+    @Test
+    @Story("Create token")
+    @DisplayName("POST /auth with empty credentials returns bad credentials reason")
+    void auth_withEmptyCredentials_returnsBadCredentialsReason() {
+        Response response = bookingApi.createToken(Map.of("username", "", "password", ""));
 
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.jsonPath().getString("reason")).isEqualTo("Bad credentials");

@@ -132,4 +132,64 @@ public class BookingApiTest {
         Response getResponse = bookingApi.getBooking(bookingId);
         assertThat(getResponse.statusCode()).isEqualTo(404);
     }
+
+    @Test
+    @Story("Get booking by id")
+    @DisplayName("GET /booking/{id} returns 404 for non-existent booking")
+    void getBookingById_withNonExistentId_returnsNotFound() {
+        Response response = bookingApi.getBooking(999_999_999);
+
+        assertThat(response.statusCode()).isEqualTo(404);
+    }
+
+    @Test
+    @Story("Update booking")
+    @DisplayName("PUT /booking/{id} without token returns forbidden")
+    void updateBooking_withoutToken_returnsForbidden() {
+        Booking payload = TestDataFactory.randomBooking();
+        int bookingId = bookingApi.asBookingResponse(bookingApi.createBooking(payload)).bookingid();
+
+        Booking updated = new Booking(
+                "Unauthorized",
+                "Update",
+                222,
+                false,
+                payload.bookingdates(),
+                "None"
+        );
+
+        Response response = bookingApi.updateBookingWithoutToken(bookingId, updated);
+        assertThat(response.statusCode()).isEqualTo(403);
+    }
+
+    @Test
+    @Story("Update booking")
+    @DisplayName("PUT /booking/{id} with invalid token returns forbidden")
+    void updateBooking_withInvalidToken_returnsForbidden() {
+        Booking payload = TestDataFactory.randomBooking();
+        int bookingId = bookingApi.asBookingResponse(bookingApi.createBooking(payload)).bookingid();
+
+        Booking updated = new Booking(
+                "Invalid",
+                "Token",
+                333,
+                true,
+                payload.bookingdates(),
+                "None"
+        );
+
+        Response response = bookingApi.updateBooking(bookingId, updated, "not-a-valid-token");
+        assertThat(response.statusCode()).isEqualTo(403);
+    }
+
+    @Test
+    @Story("Delete booking")
+    @DisplayName("DELETE /booking/{id} without token returns forbidden")
+    void deleteBooking_withoutToken_returnsForbidden() {
+        Booking payload = TestDataFactory.randomBooking();
+        int bookingId = bookingApi.asBookingResponse(bookingApi.createBooking(payload)).bookingid();
+
+        Response response = bookingApi.deleteBookingWithoutToken(bookingId);
+        assertThat(response.statusCode()).isEqualTo(403);
+    }
 }

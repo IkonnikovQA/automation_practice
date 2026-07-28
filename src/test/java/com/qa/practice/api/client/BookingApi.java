@@ -34,6 +34,17 @@ public class BookingApi {
                 .extract().response();
     }
 
+    @Step("POST /auth with custom payload")
+    public Response createToken(Object body) {
+        return given()
+                .spec(RequestSpecs.base())
+                .body(body)
+                .when()
+                .post("/auth")
+                .then()
+                .extract().response();
+    }
+
     @Step("Create auth token with default credentials")
     public String createToken() {
         AuthResponse auth = createToken(Config.authUsername(), Config.authPassword())
@@ -86,6 +97,17 @@ public class BookingApi {
                 .extract().response();
     }
 
+    @Step("PUT /booking/{bookingId} without auth token")
+    public Response updateBookingWithoutToken(int bookingId, Booking booking) {
+        return given()
+                .spec(RequestSpecs.base())
+                .body(booking)
+                .when()
+                .put("/booking/{id}", bookingId)
+                .then()
+                .extract().response();
+    }
+
     @Step("PATCH /booking/{bookingId}")
     public Response partialUpdateBooking(int bookingId, Object patchBody, String token) {
         return given()
@@ -101,6 +123,16 @@ public class BookingApi {
     public Response deleteBooking(int bookingId, String token) {
         return given()
                 .spec(RequestSpecs.withToken(token))
+                .when()
+                .delete("/booking/{id}", bookingId)
+                .then()
+                .extract().response();
+    }
+
+    @Step("DELETE /booking/{bookingId} without auth token")
+    public Response deleteBookingWithoutToken(int bookingId) {
+        return given()
+                .spec(RequestSpecs.base())
                 .when()
                 .delete("/booking/{id}", bookingId)
                 .then()
