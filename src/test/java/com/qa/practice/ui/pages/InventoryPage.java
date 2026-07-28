@@ -17,6 +17,7 @@ public class InventoryPage {
   private final SelenideElement addBackpackButton = $("#add-to-cart-sauce-labs-backpack");
   private final SelenideElement removeBackpackButton = $("#remove-sauce-labs-backpack");
   private final SelenideElement cartBadge = $(".shopping_cart_badge");
+  private final SelenideElement cartLink = $(".shopping_cart_link");
   private final SelenideElement sortDropdown = $(".product_sort_container");
   private final ElementsCollection itemNames = $$(".inventory_item_name");
 
@@ -61,5 +62,11 @@ public class InventoryPage {
   public InventoryPage shouldHaveFirstItemName(String expectedName) {
     itemNames.first().shouldBe(visible).shouldHave(text(expectedName));
     return this;
+  }
+
+  @Step("Open cart page")
+  public CartPage openCart() {
+    cartLink.shouldBe(visible).click();
+    return new CartPage();
   }
 }

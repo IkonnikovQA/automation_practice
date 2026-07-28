@@ -82,6 +82,28 @@ public class SauceDemoUiTest extends BaseUiTest {
   }
 
   @Test
+  @Tag("smoke")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.BLOCKER)
+  @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
+  @Story("Checkout")
+  @DisplayName("User can complete checkout flow")
+  void userCanCompleteCheckoutFlow() {
+    loginPage
+        .openPage()
+        .loginAs(Config.uiUsername(), Config.uiPassword())
+        .shouldBeOpened()
+        .addBackpackToCart()
+        .openCart()
+        .shouldBeOpened()
+        .shouldContainItem("Sauce Labs Backpack")
+        .checkout()
+        .shouldBeStepOne()
+        .fillCustomerInfo("Oleg", "QA", "123456")
+        .finishAndVerifySuccess();
+  }
+
+  @Test
   @Tag("negative")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)

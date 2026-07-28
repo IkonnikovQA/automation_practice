@@ -152,6 +152,24 @@ public class BookingApiTest {
   }
 
   @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("List bookings")
+  @DisplayName("GET /booking with unknown filters returns empty list")
+  void getBookingIds_withUnknownNameFilters_returnsEmptyList() {
+    String suffix = UUID.randomUUID().toString().substring(0, 8);
+    Response response =
+        bookingApi.getBookingIdsByName("NoSuchFirst" + suffix, "NoSuchLast" + suffix);
+    assertThat(response.statusCode()).isEqualTo(200);
+    List<Map<String, Integer>> ids = response.jsonPath().getList("$");
+    assertThat(ids).isEmpty();
+  }
+
+  @Test
   @Tag("smoke")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)

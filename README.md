@@ -100,6 +100,7 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
   - add product to cart
   - remove product from cart
   - sort by price low-high
+  - full checkout flow
   - locked out user error
   - invalid password error
 
