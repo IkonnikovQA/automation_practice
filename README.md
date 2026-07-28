@@ -98,7 +98,10 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
 - UI (SauceDemo):
   - valid login
   - add product to cart
+  - remove product from cart
+  - sort by price low-high
   - locked out user error
+  - invalid password error
 
 ## Roadmap
 

@@ -48,6 +48,40 @@ public class SauceDemoUiTest extends BaseUiTest {
   }
 
   @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
+  @Story("Cart")
+  @DisplayName("User can remove product from cart")
+  void userCanRemoveProductFromCart() {
+    loginPage
+        .openPage()
+        .loginAs(Config.uiUsername(), Config.uiPassword())
+        .shouldBeOpened()
+        .addBackpackToCart()
+        .shouldHaveCartCount("1")
+        .removeBackpackFromCart()
+        .shouldNotHaveCartBadge();
+  }
+
+  @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
+  @Story("Catalog")
+  @DisplayName("User can sort products by price low to high")
+  void userCanSortProductsByPriceLowToHigh() {
+    loginPage
+        .openPage()
+        .loginAs(Config.uiUsername(), Config.uiPassword())
+        .shouldBeOpened()
+        .sortByPriceLowToHigh()
+        .shouldHaveFirstItemName("Sauce Labs Onesie");
+  }
+
+  @Test
   @Tag("negative")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.NORMAL)
@@ -58,5 +92,17 @@ public class SauceDemoUiTest extends BaseUiTest {
     loginPage.openPage().loginAs("locked_out_user", Config.uiPassword());
 
     loginPage.shouldShowError("Sorry, this user has been locked out.");
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(name = "SauceDemo", url = "https://www.saucedemo.com/")
+  @Story("Login")
+  @DisplayName("User sees error for invalid password")
+  void invalidPasswordShowsError() {
+    loginPage.openPage().loginAs(Config.uiUsername(), "wrong_password");
+    loginPage.shouldShowError("Username and password do not match any user in this service");
   }
 }

@@ -19,6 +19,7 @@ import io.restassured.response.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -123,6 +124,34 @@ public class BookingApiTest {
   }
 
   @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("List bookings")
+  @DisplayName("GET /booking supports firstname and lastname filters")
+  void getBookingIds_withNameFilters_containsCreatedBookingId() {
+    String suffix = UUID.randomUUID().toString().substring(0, 8);
+    Booking payload =
+        new Booking(
+            "Auto" + suffix,
+            "Case" + suffix,
+            111,
+            true,
+            new BookingDates("2026-08-20", "2026-08-22"),
+            "Breakfast");
+    int bookingId = createAndTrackBooking(payload);
+
+    Response response = bookingApi.getBookingIdsByName(payload.firstname(), payload.lastname());
+    assertThat(response.statusCode()).isEqualTo(200);
+    List<Map<String, Integer>> ids = response.jsonPath().getList("$");
+    assertThat(ids).isNotEmpty();
+    assertThat(ids).anyMatch(item -> item.get("bookingid") == bookingId);
+  }
+
+  @Test
   @Tag("smoke")
   @Owner("IkonnikovQA")
   @Severity(SeverityLevel.CRITICAL)
@@ -153,6 +182,12 @@ public class BookingApiTest {
     assertThat(body.lastname()).isEqualTo("Name");
     assertThat(body.totalprice()).isEqualTo(999);
     assertThat(body.additionalneeds()).isEqualTo("Late checkout");
+
+    Response refetchResponse = bookingApi.getBooking(bookingId);
+    assertThat(refetchResponse.statusCode()).isEqualTo(200);
+    Booking refetched = bookingApi.asBooking(refetchResponse);
+    assertThat(refetched.firstname()).isEqualTo("Updated");
+    assertThat(refetched.totalprice()).isEqualTo(999);
   }
 
   @Test
