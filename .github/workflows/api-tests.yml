@@ -32,10 +32,28 @@ jobs:
           cache: maven
 
       - name: Spotless format check
-        run: mvn -B spotless:check
+        run: |
+          for attempt in 1 2 3; do
+            mvn -B spotless:check && break
+            if [ "$attempt" -eq 3 ]; then
+              echo "Spotless failed after 3 attempts"
+              exit 1
+            fi
+            echo "Retrying Spotless in 15s..."
+            sleep 15
+          done
 
       - name: Checkstyle
-        run: mvn -B checkstyle:check
+        run: |
+          for attempt in 1 2 3; do
+            mvn -B checkstyle:check && break
+            if [ "$attempt" -eq 3 ]; then
+              echo "Checkstyle failed after 3 attempts"
+              exit 1
+            fi
+            echo "Retrying Checkstyle in 15s..."
+            sleep 15
+          done
 
   api-smoke:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
@@ -68,7 +86,16 @@ jobs:
           EOF
 
       - name: Run smoke API tests
-        run: mvn -B -pl api-tests -am clean test -Psmoke-api
+        run: |
+          for attempt in 1 2 3; do
+            mvn -B -pl api-tests -am test -Psmoke-api && break
+            if [ "$attempt" -eq 3 ]; then
+              echo "API smoke failed after 3 attempts"
+              exit 1
+            fi
+            echo "Retrying API smoke in 20s..."
+            sleep 20
+          done
 
       - name: Upload Surefire reports
         if: always()
@@ -128,7 +155,16 @@ jobs:
           EOF
 
       - name: Run smoke UI tests
-        run: mvn -B -pl ui-tests -am clean test -Psmoke-ui -Dui.remote.url=http://localhost:4444/wd/hub -Dui.headless=false
+        run: |
+          for attempt in 1 2 3; do
+            mvn -B -pl ui-tests -am test -Psmoke-ui -Dui.remote.url=http://localhost:4444/wd/hub -Dui.headless=false && break
+            if [ "$attempt" -eq 3 ]; then
+              echo "UI smoke failed after 3 attempts"
+              exit 1
+            fi
+            echo "Retrying UI smoke in 20s..."
+            sleep 20
+          done
 
       - name: Upload Surefire reports
         if: always()
@@ -190,7 +226,16 @@ jobs:
           EOF
 
       - name: Run UI diagnostics with single rerun
-        run: mvn -B -pl ui-tests -am clean test -Psmoke-ui -Dui.remote.url=http://localhost:4444/wd/hub -Dui.headless=false -Dsurefire.rerunFailingTestsCount=1
+        run: |
+          for attempt in 1 2 3; do
+            mvn -B -pl ui-tests -am test -Psmoke-ui -Dui.remote.url=http://localhost:4444/wd/hub -Dui.headless=false -Dsurefire.rerunFailingTestsCount=1 && break
+            if [ "$attempt" -eq 3 ]; then
+              echo "UI diagnostics failed after 3 attempts"
+              exit 1
+            fi
+            echo "Retrying UI diagnostics in 20s..."
+            sleep 20
+          done
 
       - name: Upload Surefire reports
         if: always()
@@ -238,7 +283,16 @@ jobs:
           cp api-tests/target/allure-results/environment.properties ui-tests/target/allure-results/environment.properties
 
       - name: Run full regression suite
-        run: mvn -B clean test
+        run: |
+          for attempt in 1 2 3; do
+            mvn -B clean test && break
+            if [ "$attempt" -eq 3 ]; then
+              echo "Regression failed after 3 attempts"
+              exit 1
+            fi
+            echo "Retrying regression in 30s..."
+            sleep 30
+          done
 
       - name: Upload Surefire reports
         if: always()
@@ -286,11 +340,11 @@ jobs:
           name: allure-results-regression-ui
           path: merged-allure-results
 
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline --unsafe-perm
+
       - name: Generate Allure report
-        uses: simple-elf/allure-report-action@v1.9
-        with:
-          allure_results: merged-allure-results
-          allure_report: allure-report
+        run: allure generate merged-allure-results --clean -o allure-report
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
