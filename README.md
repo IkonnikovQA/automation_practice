@@ -1,5 +1,7 @@
 # automation_practice
 
+[![Allure Report](https://img.shields.io/badge/Allure-Report-blue)](https://ikonnikovqa.github.io/automation_practice/#)
+
 API + UI automation framework for [Restful Booker](https://restful-booker.herokuapp.com/apidoc/index.html) and [SauceDemo](https://www.saucedemo.com/) with production-like test architecture and CI.
 
 ## Tech stack
