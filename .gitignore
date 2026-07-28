@@ -2,6 +2,9 @@
 target/
 *.class
 *.jar
+*.war
+*.nar
+*.ear
 
 # IDE
 .idea/
