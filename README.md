@@ -68,6 +68,22 @@ mvn checkstyle:check
 mvn allure:serve
 ```
 
+## Run in Docker
+
+```bash
+# build image
+docker compose build
+
+# API smoke in container
+docker compose --profile api run --rm api-smoke
+
+# UI smoke in containers (starts selenium + test runner)
+docker compose --profile ui up --abort-on-container-exit --exit-code-from ui-smoke ui-smoke
+
+# optional: open Selenium VNC in browser
+# http://localhost:7900 (password: secret)
+```
+
 Default auth: `admin` / `password123` (from Restful Booker docs).
 
 ## CI workflow

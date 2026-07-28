@@ -38,6 +38,23 @@ public final class Config {
     return Objects.requireNonNull(PROPERTIES.getProperty(key), "Missing config key: " + key);
   }
 
+  public static String getOptional(String key) {
+    String envKey = key.toUpperCase().replace('.', '_');
+    String fromEnv = System.getenv(envKey);
+    if (fromEnv != null && !fromEnv.isBlank()) {
+      return fromEnv;
+    }
+    String fromSystem = System.getProperty(key);
+    if (fromSystem != null && !fromSystem.isBlank()) {
+      return fromSystem;
+    }
+    String fromProperties = PROPERTIES.getProperty(key);
+    if (fromProperties == null || fromProperties.isBlank()) {
+      return null;
+    }
+    return fromProperties;
+  }
+
   public static String apiBaseUrl() {
     return get("api.baseUrl");
   }
@@ -72,5 +89,9 @@ public final class Config {
 
   public static long uiTimeoutMs() {
     return Long.parseLong(get("ui.timeout.ms"));
+  }
+
+  public static String uiRemoteUrl() {
+    return getOptional("ui.remote.url");
   }
 }

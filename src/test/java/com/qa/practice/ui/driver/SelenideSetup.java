@@ -19,6 +19,9 @@ public class SelenideSetup implements BeforeAllCallback {
     Configuration.baseUrl = Config.uiBaseUrl();
     Configuration.browser = Config.uiBrowser();
     Configuration.headless = Config.uiHeadless();
+    if (Config.uiRemoteUrl() != null) {
+      Configuration.remote = Config.uiRemoteUrl();
+    }
     Configuration.timeout = Config.uiTimeoutMs();
     Configuration.pageLoadTimeout = 20_000;
     Configuration.browserSize = "1920x1080";
