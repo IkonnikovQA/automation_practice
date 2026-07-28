@@ -18,6 +18,8 @@ public class InventoryPage {
   private final SelenideElement removeBackpackButton = $("#remove-sauce-labs-backpack");
   private final SelenideElement cartBadge = $(".shopping_cart_badge");
   private final SelenideElement cartLink = $(".shopping_cart_link");
+  private final SelenideElement burgerMenuButton = $("#react-burger-menu-btn");
+  private final SelenideElement logoutLink = $("#logout_sidebar_link");
   private final SelenideElement sortDropdown = $(".product_sort_container");
   private final ElementsCollection itemNames = $$(".inventory_item_name");
 
@@ -68,5 +70,12 @@ public class InventoryPage {
   public CartPage openCart() {
     cartLink.shouldBe(visible).click();
     return new CartPage();
+  }
+
+  @Step("Logout from inventory page")
+  public LoginPage logout() {
+    burgerMenuButton.shouldBe(visible).click();
+    logoutLink.shouldBe(visible).click();
+    return new LoginPage();
   }
 }

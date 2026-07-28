@@ -64,6 +64,10 @@ public class BookingApiTest {
     Response response = bookingApi.getBookingIds();
 
     assertThat(response.statusCode()).isEqualTo(200);
+    response
+        .then()
+        .assertThat()
+        .body(matchesJsonSchemaInClasspath("schemas/booking-id-list-schema.json"));
     List<Map<String, Integer>> ids = response.jsonPath().getList("$");
     assertThat(ids).isNotEmpty();
     assertThat(ids.get(0)).containsKey("bookingid");
@@ -146,6 +150,42 @@ public class BookingApiTest {
 
     Response response = bookingApi.getBookingIdsByName(payload.firstname(), payload.lastname());
     assertThat(response.statusCode()).isEqualTo(200);
+    response
+        .then()
+        .assertThat()
+        .body(matchesJsonSchemaInClasspath("schemas/booking-id-list-schema.json"));
+    List<Map<String, Integer>> ids = response.jsonPath().getList("$");
+    assertThat(ids).isNotEmpty();
+    assertThat(ids).anyMatch(item -> item.get("bookingid") == bookingId);
+  }
+
+  @Test
+  @Tag("regression")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("List bookings")
+  @DisplayName("GET /booking supports firstname-only filter")
+  void getBookingIds_withFirstNameFilter_containsCreatedBookingId() {
+    String suffix = UUID.randomUUID().toString().substring(0, 8);
+    Booking payload =
+        new Booking(
+            "AutoFirst" + suffix,
+            "Case" + suffix,
+            111,
+            true,
+            new BookingDates("2026-08-20", "2026-08-22"),
+            "Breakfast");
+    int bookingId = createAndTrackBooking(payload);
+
+    Response response = bookingApi.getBookingIdsByFirstName(payload.firstname());
+    assertThat(response.statusCode()).isEqualTo(200);
+    response
+        .then()
+        .assertThat()
+        .body(matchesJsonSchemaInClasspath("schemas/booking-id-list-schema.json"));
     List<Map<String, Integer>> ids = response.jsonPath().getList("$");
     assertThat(ids).isNotEmpty();
     assertThat(ids).anyMatch(item -> item.get("bookingid") == bookingId);
@@ -165,6 +205,10 @@ public class BookingApiTest {
     Response response =
         bookingApi.getBookingIdsByName("NoSuchFirst" + suffix, "NoSuchLast" + suffix);
     assertThat(response.statusCode()).isEqualTo(200);
+    response
+        .then()
+        .assertThat()
+        .body(matchesJsonSchemaInClasspath("schemas/booking-id-list-schema.json"));
     List<Map<String, Integer>> ids = response.jsonPath().getList("$");
     assertThat(ids).isEmpty();
   }
@@ -229,6 +273,12 @@ public class BookingApiTest {
     Booking body = bookingApi.asBooking(response);
     assertThat(body.firstname()).isEqualTo("Patched");
     assertThat(body.lastname()).isEqualTo(payload.lastname());
+
+    Response refetchResponse = bookingApi.getBooking(bookingId);
+    assertThat(refetchResponse.statusCode()).isEqualTo(200);
+    Booking refetched = bookingApi.asBooking(refetchResponse);
+    assertThat(refetched.firstname()).isEqualTo("Patched");
+    assertThat(refetched.lastname()).isEqualTo(payload.lastname());
   }
 
   @Test
@@ -321,6 +371,23 @@ public class BookingApiTest {
     int bookingId = createAndTrackBooking(payload);
 
     Response response = bookingApi.deleteBookingWithoutToken(bookingId);
+    assertThat(response.statusCode()).isEqualTo(403);
+  }
+
+  @Test
+  @Tag("negative")
+  @Owner("IkonnikovQA")
+  @Severity(SeverityLevel.NORMAL)
+  @Link(
+      name = "Restful Booker API Docs",
+      url = "https://restful-booker.herokuapp.com/apidoc/index.html")
+  @Story("Delete booking")
+  @DisplayName("DELETE /booking/{id} with invalid token returns forbidden")
+  void deleteBooking_withInvalidToken_returnsForbidden() {
+    Booking payload = TestDataFactory.randomBooking();
+    int bookingId = createAndTrackBooking(payload);
+
+    Response response = bookingApi.deleteBooking(bookingId, "not-a-valid-token");
     assertThat(response.statusCode()).isEqualTo(403);
   }
 

@@ -15,6 +15,7 @@ public class CheckoutPage {
   private final SelenideElement continueButton = $("#continue");
   private final SelenideElement finishButton = $("#finish");
   private final SelenideElement completeHeader = $(".complete-header");
+  private final SelenideElement errorMessage = $("h3[data-test='error']");
 
   @Step("Verify checkout step one opened")
   public CheckoutPage shouldBeStepOne() {
@@ -28,6 +29,21 @@ public class CheckoutPage {
     lastNameInput.setValue(lastName);
     postalCodeInput.setValue(postalCode);
     continueButton.shouldBe(visible).click();
+    return this;
+  }
+
+  @Step("Submit checkout info: {firstName} {lastName} / {postalCode}")
+  public CheckoutPage submitCustomerInfo(String firstName, String lastName, String postalCode) {
+    firstNameInput.setValue(firstName);
+    lastNameInput.setValue(lastName);
+    postalCodeInput.setValue(postalCode);
+    continueButton.shouldBe(visible).click();
+    return this;
+  }
+
+  @Step("Verify checkout error message: {expectedMessage}")
+  public CheckoutPage shouldShowError(String expectedMessage) {
+    errorMessage.shouldBe(visible).shouldHave(text(expectedMessage));
     return this;
   }
 

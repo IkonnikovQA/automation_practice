@@ -34,4 +34,11 @@ public class LoginPage {
     errorMessage.shouldBe(visible).shouldHave(text(message));
     return this;
   }
+
+  @Step("Verify login page is displayed")
+  public LoginPage shouldBeOpened() {
+    usernameInput.shouldBe(visible);
+    loginButton.shouldBe(visible);
+    return this;
+  }
 }

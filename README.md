@@ -85,6 +85,7 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
   - invalid credentials
 - Booking positive:
   - list bookings
+  - list by firstname filter
   - create booking
   - get by id
   - full update (`PUT`)
@@ -97,10 +98,13 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
   - delete without token (`403`)
 - UI (SauceDemo):
   - valid login
+  - logout
+  - login mandatory fields validation
   - add product to cart
   - remove product from cart
   - sort by price low-high
   - full checkout flow
+  - checkout mandatory fields validation
   - locked out user error
   - invalid password error
 
