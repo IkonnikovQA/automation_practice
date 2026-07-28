@@ -1,6 +1,6 @@
 # automation_practice
 
-API automation framework for [Restful Booker](https://restful-booker.herokuapp.com/apidoc/index.html) with production-like test architecture and CI.
+API + UI automation framework for [Restful Booker](https://restful-booker.herokuapp.com/apidoc/index.html) and [SauceDemo](https://www.saucedemo.com/) with production-like test architecture and CI.
 
 ## Tech stack
 
@@ -8,6 +8,7 @@ API automation framework for [Restful Booker](https://restful-booker.herokuapp.c
 - Maven
 - JUnit 5
 - REST Assured
+- Selenide
 - AssertJ
 - Allure
 - Spotless / Checkstyle / Enforcer
@@ -22,9 +23,12 @@ src/test/java/com/qa/practice/
 │   ├── models/         # DTO records
 │   └── specs/          # base spec + token spec + retry filter
 ├── data/               # test data factory/builders
-└── tests/api/
-    ├── AuthApiTest
-    └── BookingApiTest
+└── tests/
+    ├── api/
+    │   ├── AuthApiTest
+    │   └── BookingApiTest
+    └── ui/
+        └── SauceDemoUiTest
 
 src/test/resources/
 └── schemas/            # JSON Schema contracts
@@ -51,6 +55,9 @@ mvn clean test
 # smoke set (fast checks)
 mvn clean test -Dgroups=smoke
 
+# ui only
+mvn clean test -Dgroups=ui
+
 # style & quality checks
 mvn spotless:check
 mvn checkstyle:check
@@ -76,7 +83,6 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
 - Auth:
   - valid credentials
   - invalid credentials
-  - malformed body
 - Booking positive:
   - list bookings
   - create booking
@@ -89,10 +95,13 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
   - update without token (`403`)
   - update with invalid token (`403`)
   - delete without token (`403`)
-  - invalid create payloads (`400`)
+- UI (SauceDemo):
+  - valid login
+  - add product to cart
+  - locked out user error
 
 ## Roadmap
 
-- Add UI module (`ui-tests`) with Selenide
+- Add separate UI Maven module (`ui-tests`)
 - Add API + UI hybrid flows
 - Publish generated Allure report to GitHub Pages

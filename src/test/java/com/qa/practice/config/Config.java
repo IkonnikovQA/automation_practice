@@ -49,4 +49,28 @@ public final class Config {
   public static String authPassword() {
     return get("auth.password");
   }
+
+  public static String uiBaseUrl() {
+    return get("ui.baseUrl");
+  }
+
+  public static String uiUsername() {
+    return get("ui.username");
+  }
+
+  public static String uiPassword() {
+    return get("ui.password");
+  }
+
+  public static String uiBrowser() {
+    return get("ui.browser");
+  }
+
+  public static boolean uiHeadless() {
+    return Boolean.parseBoolean(get("ui.headless"));
+  }
+
+  public static long uiTimeoutMs() {
+    return Long.parseLong(get("ui.timeout.ms"));
+  }
 }
