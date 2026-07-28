@@ -20,6 +20,7 @@
         <slf4j.version>2.0.16</slf4j.version>
         <jackson.version>2.18.2</jackson.version>
         <aspectj.version>1.9.22.1</aspectj.version>
+        <junit.tags></junit.tags>
     </properties>
 
     <dependencies>
@@ -112,6 +113,7 @@
                     <properties>
                         <configurationParameters>
                             junit.jupiter.extensions.autodetection.enabled=true
+                            junit.jupiter.tags=${junit.tags}
                         </configurationParameters>
                     </properties>
                     <systemPropertyVariables>
@@ -177,4 +179,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>smoke-api</id>
+            <properties>
+                <junit.tags>smoke &amp; api</junit.tags>
+            </properties>
+        </profile>
+        <profile>
+            <id>smoke-ui</id>
+            <properties>
+                <junit.tags>smoke &amp; ui</junit.tags>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -54,11 +54,11 @@ src/test/resources/
 # full regression
 mvn clean test
 
-# smoke set (fast checks)
-mvn clean test -Dgroups=smoke
+# smoke API set (fast checks)
+mvn clean test -Psmoke-api
 
-# ui only
-mvn clean test -Dgroups=ui
+# smoke UI set
+mvn clean test -Psmoke-ui
 
 # style & quality checks
 mvn spotless:check
@@ -84,6 +84,28 @@ docker compose --profile ui up --abort-on-container-exit --exit-code-from ui-smo
 # http://localhost:7900 (password: secret)
 ```
 
+## One-command local runs
+
+```bash
+# Make targets (Linux/macOS/WSL/Git Bash)
+make quality
+make api-smoke
+make ui-smoke
+make ci-local
+
+# Bash script
+./scripts/ci-local.sh all
+./scripts/ci-local.sh quality
+./scripts/ci-local.sh ui-smoke
+```
+
+```powershell
+# PowerShell script (Windows)
+.\scripts\ci-local.ps1 -Stage all
+.\scripts\ci-local.ps1 -Stage quality
+.\scripts\ci-local.ps1 -Stage ui-smoke
+```
+
 Default auth: `admin` / `password123` (from Restful Booker docs).
 
 ## CI workflow
@@ -91,8 +113,9 @@ Default auth: `admin` / `password123` (from Restful Booker docs).
 GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
 
 - `quality` job: Spotless + Checkstyle
-- `smoke` job: runs on PR and manual trigger
-- `regression` job: runs on push to `main`, schedule, manual trigger
+- `api-smoke` job: API smoke (`-Psmoke-api`) on PR and manual trigger
+- `ui-smoke` job: UI smoke (`-Psmoke-ui`) on PR and manual trigger with Selenium service
+- `regression` job: full regression on push to `main`, schedule, manual trigger
 - Surefire + Allure artifacts upload for each test job
 
 Jenkins pipeline (`Jenkinsfile`) includes:
