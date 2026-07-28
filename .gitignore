@@ -30,3 +30,6 @@ allure-report/
 # Env / secrets
 .env
 config.local.properties
+
+# Local helper scripts
+.git-msg-filter.ps1

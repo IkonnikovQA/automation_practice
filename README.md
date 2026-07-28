@@ -95,6 +95,14 @@ GitHub Actions workflow (`.github/workflows/api-tests.yml`) includes:
 - `regression` job: runs on push to `main`, schedule, manual trigger
 - Surefire + Allure artifacts upload for each test job
 
+Jenkins pipeline (`Jenkinsfile`) includes:
+
+- `Quality` stage: Spotless + Checkstyle
+- `Build Docker Image` stage: `docker compose build`
+- `API Smoke` stage: dockerized smoke for `AuthApiTest` + `BookingApiTest`
+- `UI Smoke` stage: dockerized smoke for `SauceDemoUiTest` with Selenium container
+- archived test artifacts from API and UI stages
+
 ## Coverage
 
 - Health: `GET /ping`
