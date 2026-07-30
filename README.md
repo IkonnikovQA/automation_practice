@@ -23,26 +23,25 @@
 
 ```text
 automation_practice/
-├── pom.xml             # родительский агрегатор + управление зависимостями/плагинами
+├── pom.xml                 # родительский агрегатор + управление зависимостями/плагинами
 ├── test-core/
-│   └── pom.xml         # общий код: config/specs/clients/page objects/builders (test-jar)
+│   ├── pom.xml             # общий framework JAR (config/specs/clients/page objects/builders)
+│   └── src/main/
+│       ├── java/com/qa/practice/{config,api,data,ui}/
+│       └── resources/      # config.properties, allure.properties, categories.json
 ├── api-tests/
-│   └── pom.xml         # API-модуль (AuthApiTest, BookingApiTest)
+│   ├── pom.xml
+│   └── src/test/
+│       ├── java/.../tests/api/   # AuthApiTest, BookingApiTest
+│       └── resources/schemas/
 ├── ui-tests/
-│   └── pom.xml         # UI-модуль (SauceDemoUiTest)
-├── docs/
-│   └── api-coverage.md # карта endpoint → тесты
-└── src/test/
-    ├── java/com/qa/practice/
-    │   ├── config/
-    │   ├── api/
-    │   ├── data/
-    │   ├── ui/
-    │   └── tests/
-    └── resources/
-        ├── schemas/
-        ├── allure.properties
-        └── categories.json
+│   ├── pom.xml
+│   └── src/test/java/.../tests/ui/  # SauceDemoUiTest
+├── hybrid-tests/
+│   ├── pom.xml
+│   └── src/test/java/.../tests/hybrid/  # API → UI оркестрация
+└── docs/
+    └── api-coverage.md     # карта endpoint → тесты
 ```
 
 ## Ключевые инженерные решения
@@ -74,6 +73,9 @@ mvn -pl api-tests -am clean test -Psmoke-api
 # smoke UI
 mvn -pl ui-tests -am clean test -Psmoke-ui
 
+# smoke Hybrid (API → UI)
+mvn -pl hybrid-tests -am clean test -Psmoke-hybrid
+
 # стиль и quality-гейты (также привязаны к verify)
 mvn verify -DskipTests
 mvn spotless:check
@@ -96,6 +98,9 @@ docker compose --profile api run --rm api-smoke
 
 # UI smoke (поднимает selenium + runner)
 docker compose --profile ui up --abort-on-container-exit --exit-code-from ui-smoke ui-smoke
+
+# Hybrid smoke (API → UI, с Selenium)
+docker compose --profile hybrid up --abort-on-container-exit --exit-code-from hybrid-smoke hybrid-smoke
 
 # опционально: Selenium VNC в браузере
 # http://localhost:7900 (пароль: secret)
@@ -146,7 +151,7 @@ GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):
 - `api-smoke`: API smoke (`-Psmoke-api`) на PR и ручной запуск
 - `ui-smoke`: UI smoke (`-Psmoke-ui`) на PR и ручной запуск с Selenium
 - `ui-smoke-diagnostics`: scheduled/manual UI smoke с одним rerun для диагностики флаков
-- `regression`: полная регрессия на push в `main`, schedule и manual (с Selenium)
+- `regression`: полная регрессия (api + ui + hybrid) на push в `main`, schedule и manual (с Selenium)
 - `allure-report`: публикация отчёта на GitHub Pages при push в main / schedule / manual
 - артефакты Surefire + Allure для каждого тестового job
 
@@ -165,6 +170,7 @@ Jenkins (`Jenkinsfile`):
 - `API Tests`: `AuthApiTest`, `BookingApiTest` (теги: `api`, `smoke`, `regression`, `negative`, `contract`)
 - `UI Framework`: `SelenideSetup`, `com.qa.practice.ui.pages.*` (`@IkonnikovQA`)
 - `UI Tests`: `SauceDemoUiTest` (теги: `ui`, `smoke`, `regression`, `negative`)
+- `Hybrid Tests`: `HybridApiUiSmokeTest` (теги: `hybrid`, `smoke`, `regression`)
 
 ## Владение и эксплуатация
 
@@ -220,11 +226,11 @@ Jenkins (`Jenkinsfile`):
   - валидация обязательных полей checkout
   - ошибка locked out user
   - ошибка неверного пароля
+- Hybrid (API → UI):
+  - health API + create/get booking, затем UI login в каталог SauceDemo
 
 ## Roadmap
 
-- Физический перенос исходников по модулям (убрать `build-helper`)
-- Hybrid API + UI сценарии
 - Матрица пользователей SauceDemo (`performance_glitch_user`, `error_user`) + sort/product details
 - Browser matrix (Chrome/Firefox) и Dependabot/CodeQL
 - Visual / a11y / load (опционально, advanced)

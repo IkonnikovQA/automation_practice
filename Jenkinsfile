@@ -56,7 +56,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'artifacts/**', allowEmptyArchive: true
-      junit testResults: 'api-tests/target/surefire-reports/*.xml,ui-tests/target/surefire-reports/*.xml', allowEmptyResults: true
+      junit testResults: 'api-tests/target/surefire-reports/*.xml,ui-tests/target/surefire-reports/*.xml,hybrid-tests/target/surefire-reports/*.xml', allowEmptyResults: true
     }
   }
 }

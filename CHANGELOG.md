@@ -9,6 +9,7 @@
 
 ### Added
 
+- модуль `hybrid-tests`: сценарий API health + create/get booking → UI login SauceDemo (`-Psmoke-hybrid`)
 - API-покрытие: `depositpaid=false`, multi-field `PATCH`, double-delete, негативы create payload
 - `docs/api-coverage.md` — карта endpoint → тесты
 - `CONTRIBUTING.md` и этот changelog
@@ -19,6 +20,7 @@
 
 ### Changed
 
+- исходники физически разнесены по модулям: `test-core` (jar из `src/main`), `api-tests` / `ui-tests` (`src/test`); убраны `build-helper` и `test-jar`
 - workflow переименован в `.github/workflows/ci.yml`
 - Selenium-образ закреплён на `selenium/standalone-chrome:4.27.0`
 - quality CI job: `mvn verify -DskipTests`

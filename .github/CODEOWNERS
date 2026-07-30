@@ -11,9 +11,9 @@
 # Test modules
 /api-tests/ @IkonnikovQA
 /ui-tests/ @IkonnikovQA
+/hybrid-tests/ @IkonnikovQA
 /test-core/ @IkonnikovQA
 
-# Shared test source and docs
-/src/test/ @IkonnikovQA
+# Docs
 /README.md @IkonnikovQA
 /RUNBOOK.md @IkonnikovQA

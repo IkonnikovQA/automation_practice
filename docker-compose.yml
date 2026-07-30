@@ -27,3 +27,15 @@ services:
       UI_HEADLESS: "false"
       UI_BROWSER: chrome
     command: ["mvn", "-pl", "ui-tests", "-am", "-Psmoke-ui", "-Dtest=SauceDemoUiTest", "test"]
+
+  hybrid-smoke:
+    build: .
+    profiles: ["hybrid"]
+    depends_on:
+      selenium:
+        condition: service_healthy
+    environment:
+      UI_REMOTE_URL: http://selenium:4444/wd/hub
+      UI_HEADLESS: "false"
+      UI_BROWSER: chrome
+    command: ["mvn", "-pl", "hybrid-tests", "-am", "-Psmoke-hybrid", "test"]

@@ -268,7 +268,7 @@ jobs:
 
       - name: Prepare Allure metadata
         run: |
-          mkdir -p api-tests/target/allure-results ui-tests/target/allure-results
+          mkdir -p api-tests/target/allure-results ui-tests/target/allure-results hybrid-tests/target/allure-results
           cat > api-tests/target/allure-results/environment.properties <<EOF
           run.type=regression
           git.branch=${{ github.ref_name }}
@@ -281,6 +281,7 @@ jobs:
           ui.remote.url=http://localhost:4444/wd/hub
           EOF
           cp api-tests/target/allure-results/environment.properties ui-tests/target/allure-results/environment.properties
+          cp api-tests/target/allure-results/environment.properties hybrid-tests/target/allure-results/environment.properties
 
       - name: Run full regression suite
         run: |
@@ -302,6 +303,7 @@ jobs:
           path: |
             api-tests/target/surefire-reports/**
             ui-tests/target/surefire-reports/**
+            hybrid-tests/target/surefire-reports/**
 
       - name: Upload Allure results
         if: always()
@@ -316,6 +318,13 @@ jobs:
         with:
           name: allure-results-regression-ui
           path: ui-tests/target/allure-results/**
+
+      - name: Upload Allure Hybrid results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-regression-hybrid
+          path: hybrid-tests/target/allure-results/**
 
   allure-report:
     if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -338,6 +347,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: allure-results-regression-ui
+          path: merged-allure-results
+
+      - name: Download Hybrid Allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-regression-hybrid
           path: merged-allure-results
 
       - name: Install Allure CLI
